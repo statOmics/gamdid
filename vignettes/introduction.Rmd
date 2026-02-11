@@ -1,0 +1,31 @@
+---
+title: "introduction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(gamdid)
+library(dplyr)
+library(ggplot2)
+library(scp)
+library(msqrob2)
+library(harmonicmeanp)
+library(stageR)
+library(mgcv)
+```
+
+```{r}
+leduc$Field <- as.factor(leduc$Field)
+compDistr(object = getWithColData(leduc, i = "proteins_norm")[1:10,],covariate = "Field", adjust = T) %>% rowData
+```

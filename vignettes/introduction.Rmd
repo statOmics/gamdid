@@ -26,6 +26,13 @@ library(mgcv)
 ```
 
 ```{r}
-leduc$Field <- as.factor(leduc$Field)
-compDistr(object = getWithColData(leduc, i = "proteins_norm")[1:10,],covariate = "Field", adjust = T) %>% rowData
+library(limma)
+leduc_test <- getWithColData(leduc, "proteins_norm")
+assay(leduc_test) <- limma::removeBatchEffect(x = assay(leduc[["proteins_norm"]]), batch = leduc$lcbatch)
+
+
+compDistr(object = leduc_test,covariate = "SampleType", adjust = F, robust = F) %>% rowData
+assays(compDistr(object = leduc, i = "proteins_norm" ,covariate = "SampleType", 
+                 adjust = F, nuisance = ~lcbatch, robust = F)[["proteins_norm"]])$assay_partialresiduals[1:10,1:10]
+assay(leduc_test)[1:10,1:10]
 ```

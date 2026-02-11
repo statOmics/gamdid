@@ -1,7 +1,8 @@
 compDistrSCE <- function(sce, covariate, nuisance = NULL, bins = 25,
                       adjust = T, alpha = 0.05, ...){
-  sce_original <- sce
+  if (any(grepl(paste0("\\b",covariate, "\\b"),as.character(nuisance)))) stop("covariate of interest cannot be in nuisance formula")
 
+  sce_original <- sce
   # ------------------------------------------------------------
   # Location analysis
   # ------------------------------------------------------------
@@ -16,7 +17,7 @@ compDistrSCE <- function(sce, covariate, nuisance = NULL, bins = 25,
   # Shape analysis (on partial residuals)
   # ------------------------------------------------------------
   if (!is.null(nuisance)) {
-    sce_partres <- partialResiduals(
+    sce <- partialResiduals(
       sce = sce,
       covariate = covariate,
       msqrob_models = location$msqrob_models,

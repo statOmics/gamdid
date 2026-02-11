@@ -22,5 +22,6 @@ Depends:
 LazyData: true
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    scpdata
 VignetteBuilder: knitr

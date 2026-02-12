@@ -20,18 +20,18 @@ adjustOutput <- function(pval, pval_shape, pval_location,
     colnames(pval) <- paste0(colnames(pval), "_aggregated")
     p_adj <- cbind(pval_shape, pval_location, pval)
   }
-  
+
   if (ncol(pval) < 2){
     adj_alpha <- alpha
   } else {
     # calculate the adjusted alpha level
-    pval_vec <- pval["omnibus"]
+    pval_vec <- pval[,"omnibus"]
     m <- length(pval_vec)
-    p_sorted <- sort(pval)
+    p_sorted <- sort(pval_vec)
     thresholds <- (1:m) / m * 0.05
     k <- max(which(p_sorted <= thresholds), 0)
     adj_alpha <- if (k > 0) thresholds[k] else NA
   }
-  
+
   list(pvals = p_adj, adj_alpha = adj_alpha)
 }

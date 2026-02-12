@@ -49,15 +49,15 @@ compDistrSCE <- function(sce, covariate, nuisance = NULL, bins = 25,
     adjust = adjust,
     alpha = alpha
   )
-
   # ------------------------------------------------------------
   # Assemble SCE
   # ------------------------------------------------------------
   sce_out <- sce_original
-  if (!is.null(nuisance)) assays(sce_out)$assay_partialresiduals <- assay(sce)
-  rowData(sce_out)$GAMmodels <- shape$models
+  if (!is.null(nuisance)) assays(sce_out)$partialResiduals <- assay(sce)
   rowData(sce_out) <- cbind(rowData(sce_out), out$pvals)
+  metadata(sce_out)$covariate <- covariate
+  metadata(sce_out)$comparisons <- setdiff(colnames(location$pvals), "omnibus")
+  metadata(sce_out)$bins <- bins
   metadata(sce_out)$adj_alpha <- out$adj_alpha
-
   sce_out
 }

@@ -15,7 +15,7 @@
 #' @export
 
 setMethod(
-  "compDistr", "SingleCellExperiment",
+  "compDistr", "SummarizedExperiment",
   function(object,
            covariate,
            nuisance = NULL,

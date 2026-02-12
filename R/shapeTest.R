@@ -30,8 +30,7 @@ shapeTest <- function(sce, covariate, bins = 25, tol = 1e-8){
       counts ~ covariate + s(midsC, by = covariate) + offset(carrier),
       data = dat,
       family = poisson(),
-      method = "REML",
-      keepData = TRUE
+      method = "REML"
     )
   })
 

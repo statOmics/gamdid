@@ -16,7 +16,7 @@ test_that("compute the correct comparisons", {
   leduc <- get_data()
   leduc$Field <- as.factor(leduc$Field)
   out <- compDistr(object = getWithColData(leduc, "proteins_norm"), covariate = "Field", nuisance = ~ -1 + (1|Set))
-  expect_true(all(c("GAMmodels", "omnibus", "Field1_VS_Field2", "Field1_VS_Field3",
+  expect_true(all(c("omnibus", "Field1_VS_Field2", "Field1_VS_Field3",
                     "Field1_VS_Field4", "Field2_VS_Field3", "Field2_VS_Field4", "Field3_VS_Field4"
   ) %in% colnames(rowData(out))))
 }

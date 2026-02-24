@@ -26,11 +26,10 @@ library(mgcv)
 ```
 
 ```{r}
-library(limma)
-leduc_test <- getWithColData(leduc, "proteins_norm")
-leduc_dd <- compDistr(object = leduc_test,covariate = "Field", adjust = T, nuisance = ~ (1|Set))
-rowData(leduc_dd)
-metadata(leduc_dd)
+leduc <- readRDS(file = "../tests/testthat/data/data_unittest.rds")
+leduc_dd <- compDistr(object = leduc,i= "proteins_norm",covariate = "Field", adjust = T, nuisance = ~ (1|Set), minObs = 30)
+rowData(leduc_dd[["proteins_norm"]])
+metadata(leduc_dd[["proteins_norm"]])
 
-visFit(object = leduc_dd, feature = 7, plot = "hist")
+visFit(object = leduc_dd[["proteins_norm"]], feature = 7, plot = "hist")
 ```

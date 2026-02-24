@@ -1,5 +1,5 @@
-compDistrSCE <- function(sce, covariate, nuisance = NULL, bins = 25,
-                      adjust = T, alpha = 0.05, ...){
+compDistrSCE <- function(sce, covariate, nuisance = NULL, minObs = 50,
+                         bins = 25, adjust = T, alpha = 0.05, ...){
   if (any(grepl(paste0("\\b",covariate, "\\b"),as.character(nuisance)))) stop("covariate of interest cannot be in nuisance formula")
 
   sce_original <- sce
@@ -28,7 +28,8 @@ compDistrSCE <- function(sce, covariate, nuisance = NULL, bins = 25,
   shape <- shapeTest(
     sce = sce,
     covariate = covariate,
-    bins = bins
+    bins = bins,
+    minObs = minObs
   )
 
   # ------------------------------------------------------------

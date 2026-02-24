@@ -18,7 +18,7 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
   if ("partialResiduals" %in% names(assays(sce))){
     assay_dat <- assays(sce)$partialResiduals[feature,]
   } else {
-    assay(sce)[feature,]
+    assay_dat <- assay(sce)[feature,]
   }
 
   dat <- createCounts(x = assay_dat, colDat = colData(sce),

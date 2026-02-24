@@ -25,8 +25,12 @@ adjustOutput <- function(pval, pval_shape, pval_location,
     adj_alpha <- alpha
   } else {
     # calculate the adjusted alpha level
-    pval_vec <- pval[,"omnibus"]
-    m <- length(pval_vec)
+    if (adjust){
+      pval_vec <- pval[,"omnibus"]
+    } else{
+      pval_vec <- pval[,"omnibus_aggregated"]
+    }
+    m <- length(pval_vec[!is.na(pval_vec)])
     p_sorted <- sort(pval_vec)
     thresholds <- (1:m) / m * 0.05
     k <- max(which(p_sorted <= thresholds), 0)

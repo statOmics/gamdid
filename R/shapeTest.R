@@ -1,4 +1,4 @@
-shapeTest <- function(sce, covariate, bins = 25, tol = 1e-8){
+shapeTest <- function(sce, covariate, minObs = 50, bins = 25, tol = 1e-8){
   colDat <- colData(sce)
   X <- assay(sce)
 
@@ -15,6 +15,7 @@ shapeTest <- function(sce, covariate, bins = 25, tol = 1e-8){
     FUN = createCounts,
     colDat = colDat,
     covariate = covariate,
+    minObs = minObs,
     bins = bins
   )
 

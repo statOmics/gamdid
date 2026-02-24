@@ -24,25 +24,22 @@ test_that("compute the correct comparisons", {
 test_that("compute the correct pvals", {
   leduc <- get_data()
   leduc$Field <- as.factor(leduc$Field)
-  out <- compDistr(object = getWithColData(leduc, "proteins_norm"), covariate = "Field", nuisance = ~ -1 + (1|Set))
+  out <- compDistr(object = getWithColData(leduc, "proteins_norm"), covariate = "Field", nuisance = ~ -1 + (1|Set), minObs = 20)
   expect_equal(rowData(out)[,c("Field1_VS_Field2", "Field1_VS_Field3", "Field1_VS_Field4",
                                "Field2_VS_Field3", "Field2_VS_Field4", "Field3_VS_Field4")],
                new("DFrame", rownames = c("A0AVT1", "A2A368", "A6H8Y1", "A6NCS6",
                                           "A6NLC8", "B0I1T2", "E9PAV3", "E9PRG8", "O00154", "O00159"),
                    nrows = 10L, elementType = "ANY", elementMetadata = NULL,
                    metadata = list(), listData = list(Field1_VS_Field2 = c(NA,
-                                                                           0.457083203173877, 0.047789282551562, 1, 0.152455928968647,
-                                                                           NA, 1.98787073902697e-09, NA, NA, NA), Field1_VS_Field3 = c(NA,
-                                                                                                                                       0.497584737355003, 0.163793066536348, 0.0512586765692817,
-                                                                                                                                       0.219401052468107, NA, 7.16780621472177e-05, NA, NA, NA),
-                                                      Field1_VS_Field4 = c(NA, 0.457083203173877, 0.163793066536348,
-                                                                           1, 1, NA, 0.0193274240217111, NA, NA, NA), Field2_VS_Field3 = c(NA,
-                                                                                                                                           0.248368490743068, 1, 0.00911076303425413, 1, NA, 1,
-                                                                                                                                           NA, NA, NA), Field2_VS_Field4 = c(NA, 0.221170928708685,
-                                                                                                                                                                             0.708927612796853, 1, 0.240382385030878, NA, 0.266664828572281,
-                                                                                                                                                                             NA, NA, NA), Field3_VS_Field4 = c(NA, 0.457083203173877,
-                                                                                                                                                                                                               0.708927612796853, 0.151153606969186, 0.219401052468107,
-                                                                                                                                                                                                               NA, 1, NA, NA, NA))))
+                                                                           NA, NA, 1, 0.203274571958196, NA, 2.65049431870263e-09, NA,
+                                                                           NA, NA), Field1_VS_Field3 = c(NA, NA, NA, 0.0683449020923757,
+                                                                                                         0.292534736624142, NA, 9.55707495296236e-05, NA, NA, NA),
+                                                      Field1_VS_Field4 = c(NA, NA, NA, 1, 1, NA, 0.0257698986956148,
+                                                                           NA, NA, NA), Field2_VS_Field3 = c(NA, NA, NA, 0.0121476840456722,
+                                                                                                             1, NA, 1, NA, NA, NA), Field2_VS_Field4 = c(NA, NA, NA,
+                                                                                                                                                         1, 0.320509846707837, NA, 0.355553104763042, NA, NA,
+                                                                                                                                                         NA), Field3_VS_Field4 = c(NA, NA, NA, 0.201538142625581,
+                                                                                                                                                                                   0.292534736624142, NA, 1, NA, NA, NA))))
 }
 )
 

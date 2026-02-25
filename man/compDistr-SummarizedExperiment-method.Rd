@@ -8,6 +8,7 @@
   object,
   covariate,
   nuisance = NULL,
+  minObs = 50,
   bins = 25,
   adjust = T,
   alpha = 0.05,
@@ -21,6 +22,8 @@
 need to be compared}
 
 \item{nuisance}{Formula for covariates you want to correct for}
+
+\item{minObs}{Minimal number of observation in each group needed to fit GAM}
 
 \item{bins}{Number of bins in the histogram to which the GAMs are fitted}
 

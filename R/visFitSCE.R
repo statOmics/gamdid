@@ -22,7 +22,7 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
   }
 
   dat <- createCounts(x = assay_dat, colDat = colData(sce),
-                           covariate = covar, bins = bins)
+                           covariate = covar, bins = bins, minObs = 0)
 
   fit_gam <- mgcv::gam(
     counts ~ covariate + s(midsC, by = covariate) + offset(carrier),

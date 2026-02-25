@@ -9,6 +9,7 @@
 #' @param covariate Column in the colData of the object of which the levels
 #' need to be compared
 #' @param nuisance Formula for covariates you want to correct for
+#' @param minObs Minimal number of observation in each group needed to fit GAM
 #' @param bins Number of bins in the histogram to which the GAMs are fitted
 #' @param adjust if TRUE, return output adjusted for multiple testing
 #' @param alpha level of significance
@@ -19,11 +20,12 @@ setMethod(
   function(object,
            covariate,
            nuisance = NULL,
+           minObs = 50,
            bins = 25,
            adjust = T,
            alpha = 0.05, ...){
-    compDistrSCE(sce = object, covariate = covariate, nuisance = nuisance, bins = bins,
-                 adjust = adjust, alpha = alpha, ...)
+    compDistrSCE(sce = object, covariate = covariate, nuisance = nuisance,
+                 minObs = minObs, bins = bins, adjust = adjust, alpha = alpha, ...)
   }
 )
 
@@ -39,11 +41,13 @@ setMethod(
            i,
            covariate,
            nuisance = NULL,
+           minObs = 50,
            bins = 25,
            adjust = T,
            alpha = 0.05, ...){
     sce <- getWithColData(object, i)
-    sce_out <- compDistrSCE(sce = sce, covariate = covariate, nuisance = nuisance, bins = bins,
+    sce_out <- compDistrSCE(sce = sce, covariate = covariate, nuisance = nuisance,
+                            minObs = minObs, bins = bins,
                             adjust = adjust, alpha = alpha, ...)
     object[[i]] <- sce_out
     return(object)

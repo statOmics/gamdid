@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 library(gamdid)
 library(dplyr)
 library(ggplot2)
+library(cowplot)
 library(scp)
 library(msqrob2)
 library(harmonicmeanp)
@@ -31,5 +32,5 @@ leduc_dd <- compDistr(object = leduc,i= "proteins_norm",covariate = "Field", adj
 rowData(leduc_dd[["proteins_norm"]])
 metadata(leduc_dd[["proteins_norm"]])
 
-visFit(object = leduc_dd[["proteins_norm"]], feature = 7, plot = "hist")
+visFit(object = leduc_dd[["proteins_norm"]], feature = 7, plot = "diff")
 ```

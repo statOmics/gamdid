@@ -87,6 +87,15 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
     }
 
   } else if (plot == "diff"){
+    ggplot() +
+      geom_col(aes(x = midsC, y = counts/exp(carrier), fill = .data[[covar]]), alpha = 0.3, position = "identity", colour = "black",data = hist_dat) +
+      scale_fill_manual(values = c("salmon", "skyblue")) +
+      geom_line(data = newdat, mapping = aes(x = midsC, y = fit, colour = .data[[covar]]), linetype = 1, linewidth = 1.2) +
+      labs(x = "midpoints", y = "density") +
+      theme_bw() +
+      theme(legend.position = "none") -> histplot
+    leg <- get_legend(histplot + theme(legend.position = "bottom"))
+
     df <- data.frame(grid = grid, diff = diff, lwr = lwr, upr = upr)
     ggplot(df, aes(x = grid)) +
       geom_line(aes(y = diff)) +
@@ -94,16 +103,25 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
       geom_line(aes(y = upr), linetype = "dashed") +
       geom_hline(yintercept = 0, linetype = "dotted", color = "red") +
       ylim(min(lwr),max(upr)) +
-      labs(x = "grid", y = "log(difference)", title = comp) +
-      theme_bw() +
-      theme(plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) -> plot_list[[comp]]
+      labs(x = "grid", y = "log(difference)") +
+      theme_bw()  -> diffplot
 
     if ( (length(mids_gray) > 0) & shade ){
-      plot_list[[comp]] +
+      histplot +
+        geom_rect(data = shade_df, aes(xmin = xmin, xmax = xmax), ymin = 0, ymax = Inf, inherit.aes = F,
+                  fill = "gray", alpha = 0.3) + theme_bw() + theme(legend.position = "none")-> histplot
+
+      diffplot +
         geom_rect(data = shade_df, aes(xmin = xmin, xmax = xmax), ymin = -Inf, ymax = Inf, inherit.aes = F,
-                  fill = "gray", alpha = 0.3) + theme_bw() +
-        theme(plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) -> plot_list[[comp]]
+                  fill = "gray", alpha = 0.3)  -> diffplot
     }
+    plot_grid(diffplot, histplot, ncol = 1, align = "v", axis = "l") -> histdiff_plot
+    plot_grid(histdiff_plot, leg, rel_heights = c(1, 0.1) , ncol = 1)-> histdiff_plot
+    #ggarrange(diffplot, histplot, ncol = 1, common.legend = T) -> histdiff_plot
+    annotate_figure(histdiff_plot,
+                    top = text_grob(comp,
+                                    face = "bold", size = 14, hjust = 0.5)) -> plot_list[[comp]]
+
     }
   }
   return(plot_list)

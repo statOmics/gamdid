@@ -87,42 +87,62 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
     }
 
   } else if (plot == "diff"){
-    ggplot() +
-      geom_col(aes(x = midsC, y = counts/exp(carrier), fill = .data[[covar]]), alpha = 0.3, position = "identity", colour = "black",data = hist_dat) +
-      scale_fill_manual(values = c("salmon", "skyblue")) +
-      geom_line(data = newdat, mapping = aes(x = midsC, y = fit, colour = .data[[covar]]), linetype = 1, linewidth = 1.2) +
-      labs(x = "midpoints", y = "density") +
-      theme_bw() +
-      theme(legend.position = "none") -> histplot
-    leg <- get_legend(histplot + theme(legend.position = "bottom"))
+    # Combine data into one dataframe
+    hist_dat_combined <- hist_dat |>
+      mutate(panel = "density",
+             x = midsC,
+             y = counts/exp(carrier),
+             lwr = NA,
+             upr = NA) |>
+      select(x,y,.data[[covar]],lwr,upr, panel)
 
     df <- data.frame(grid = grid, diff = diff, lwr = lwr, upr = upr)
-    ggplot(df, aes(x = grid)) +
-      geom_line(aes(y = diff)) +
-      geom_line(aes(y = lwr), linetype = "dashed") +
-      geom_line(aes(y = upr), linetype = "dashed") +
-      geom_hline(yintercept = 0, linetype = "dotted", color = "red") +
-      ylim(min(lwr),max(upr)) +
-      labs(x = "grid", y = "log(difference)") +
-      theme_bw()  -> diffplot
+    diff_dat_combined <- df |>
+      mutate(panel = "log(difference)",
+             x = grid,
+             y = diff,
+             "{covar}" := NA) |>
+      select(x,y,.data[[covar]],lwr,upr, panel)
+
+    combined_data <- rbind(diff_dat_combined, hist_dat_combined)
+
+    ggplot() +
+      # histogram layer
+      geom_col(data = cbind(hist_dat, panel = "density"),
+               aes(x = midsC, y = counts/exp(carrier), fill = .data[[covar]]),
+               alpha = 0.3, position = "identity", colour = "black") +
+      geom_line(data = cbind(newdat, panel = "density"),
+                mapping = aes(x = midsC, y = fit, colour = .data[[covar]]),
+                linetype = 1, linewidth = 1.2) +
+      # difference layer
+      geom_line(data = cbind(df, panel = "log(difference)"),
+                aes(x = grid, y = diff)) +
+      geom_line(data = cbind(df, panel = "log(difference)"),
+                aes(x = grid, y = lwr), linetype = "dashed") +
+      geom_line(data = cbind(df, panel = "log(difference)"),
+                aes(x = grid, y = upr), linetype = "dashed") +
+      geom_hline(data = data.frame(panel = "log(difference)"), aes(yintercept = 0),
+                 linetype = "dotted", color = "red") +
+      facet_wrap(~panel, ncol = 1, scales = "free_y", strip.position = "left") +
+      theme_bw() +
+      labs(x = "x") +
+      ggtitle(comp) +
+      theme(strip.placement = "outside",
+            strip.background = element_blank(),
+            axis.title.y = element_blank(),
+            legend.position = "top",
+            plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) -> histdiff_plot
 
     if ( (length(mids_gray) > 0) & shade ){
-      histplot +
-        geom_rect(data = shade_df, aes(xmin = xmin, xmax = xmax), ymin = 0, ymax = Inf, inherit.aes = F,
-                  fill = "gray", alpha = 0.3) + theme_bw() + theme(legend.position = "none")-> histplot
-
-      diffplot +
-        geom_rect(data = shade_df, aes(xmin = xmin, xmax = xmax), ymin = -Inf, ymax = Inf, inherit.aes = F,
-                  fill = "gray", alpha = 0.3)  -> diffplot
-    }
-    plot_grid(diffplot, histplot, ncol = 1, align = "v", axis = "l") -> histdiff_plot
-    plot_grid(histdiff_plot, leg, rel_heights = c(1, 0.1) , ncol = 1)-> histdiff_plot
-    #ggarrange(diffplot, histplot, ncol = 1, common.legend = T) -> histdiff_plot
-    annotate_figure(histdiff_plot,
-                    top = text_grob(comp,
-                                    face = "bold", size = 14, hjust = 0.5)) -> plot_list[[comp]]
-
+      histdiff_plot +
+        geom_rect(data = cbind(shade_df, panel = "density"), aes(xmin = xmin, xmax = xmax), ymin = 0, ymax = Inf, inherit.aes = F,
+                  fill = "gray", alpha = 0.3) +
+        geom_rect(data = cbind(shade_df, panel = "log(difference)"), aes(xmin = xmin, xmax = xmax), ymin = -Inf, ymax = Inf, inherit.aes = F,
+                  fill = "gray", alpha = 0.3) -> histdiff_plot
+      }
+    plot_list[[comp]] <- histdiff_plot
     }
   }
-  return(plot_list)
+  suppressWarnings(print(plot_list))
+  invisible(plot_list)
 }

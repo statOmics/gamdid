@@ -87,24 +87,7 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
     }
 
   } else if (plot == "diff"){
-    # Combine data into one dataframe
-    hist_dat_combined <- hist_dat |>
-      mutate(panel = "density",
-             x = midsC,
-             y = counts/exp(carrier),
-             lwr = NA,
-             upr = NA) |>
-      select(x,y,.data[[covar]],lwr,upr, panel)
-
     df <- data.frame(grid = grid, diff = diff, lwr = lwr, upr = upr)
-    diff_dat_combined <- df |>
-      mutate(panel = "log(difference)",
-             x = grid,
-             y = diff,
-             "{covar}" := NA) |>
-      select(x,y,.data[[covar]],lwr,upr, panel)
-
-    combined_data <- rbind(diff_dat_combined, hist_dat_combined)
 
     ggplot() +
       # histogram layer

@@ -70,20 +70,48 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
   newdat$fit <- predict(fit_gam, newdata = newdat, type = "response")
   colnames(newdat)[which(colnames(newdat) == "covariate")] <- covar
   colnames(hist_dat)[which(colnames(hist_dat) == "covariate")] <- covar
+
+  base_size   <- 10
+  base_family <- "sans"
+
+  PALETTE_GAMDID <- c(
+    "#D55E00", "#56B4E9"
+  )
+
+  scale_color_gamdid <- function(...) {
+    scale_color_manual(values = PALETTE_GAMDID, ...)
+  }
+
+  scale_fill_gamdid <- function(...) {
+    scale_fill_manual(values = PALETTE_GAMDID, ...)
+  }
+
   if (plot == "hist"){
     ggplot() +
-      geom_col(aes(x = midsC, y = counts/exp(carrier), fill = .data[[covar]]), alpha = 0.3, position = "identity", colour = "black",data = hist_dat) +
-      scale_fill_manual(values = c("salmon", "skyblue")) +
+      geom_col(aes(x = midsC, y = counts/exp(carrier), fill = .data[[covar]]), alpha = 0.4, position = "identity", colour = "black",data = hist_dat) +
+      scale_fill_gamdid() +
       geom_line(data = newdat, mapping = aes(x = midsC, y = fit, colour = .data[[covar]]), linetype = 1, linewidth = 1.2) +
+      scale_color_gamdid() +
       labs(x = "midpoints", y = "density", title = comp) +
-      theme_bw() +
-      theme(plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) -> plot_list[[comp]]
+      theme_bw(base_size = base_size, base_family = base_family) %+replace%
+      theme(plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+            # Axes
+            axis.line = element_line(linewidth = 0.2, color = "black"),
+            axis.ticks = element_line(linewidth = 0.2, color = "black"),
+            axis.text        = element_text(size = base_size, color = "black"),
+            axis.title       = element_text(size = base_size, color = "black"),
+            # Legend
+            legend.title     = element_text(size = base_size, face = "bold"),
+            legend.text      = element_text(size = base_size),
+            legend.key.size  = unit(0.2, "cm"),
+            legend.background = element_blank(),
+            legend.position  = "top",
+            legend.direction = "horizontal") -> plot_list[[comp]]
 
     if ( (length(mids_gray) > 0) & shade ){
       plot_list[[comp]] +
         geom_rect(data = shade_df, aes(xmin = xmin, xmax = xmax), ymin = 0, ymax = Inf, inherit.aes = F,
-                  fill = "gray", alpha = 0.3) + theme_bw() +
-        theme(plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) -> plot_list[[comp]]
+                  fill = "gray", alpha = 0.3) -> plot_list[[comp]]
     }
 
   } else if (plot == "diff"){
@@ -93,10 +121,12 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
       # histogram layer
       geom_col(data = cbind(hist_dat, panel = "density"),
                aes(x = midsC, y = counts/exp(carrier), fill = .data[[covar]]),
-               alpha = 0.3, position = "identity", colour = "black") +
+               alpha = 0.4, position = "identity", colour = "black") +
+      scale_fill_gamdid() +
       geom_line(data = cbind(newdat, panel = "density"),
                 mapping = aes(x = midsC, y = fit, colour = .data[[covar]]),
                 linetype = 1, linewidth = 1.2) +
+      scale_color_gamdid() +
       # difference layer
       geom_line(data = cbind(df, panel = "log(difference)"),
                 aes(x = grid, y = diff)) +
@@ -107,14 +137,27 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
       geom_hline(data = data.frame(panel = "log(difference)"), aes(yintercept = 0),
                  linetype = "dotted", color = "red") +
       facet_wrap(~panel, ncol = 1, scales = "free_y", strip.position = "left") +
-      theme_bw() +
       labs(x = "x") +
       ggtitle(comp) +
-      theme(strip.placement = "outside",
-            strip.background = element_blank(),
+      theme_bw(base_size = base_size, base_family = base_family) %+replace%
+      theme(plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+            # Axes
+            axis.line = element_line(linewidth = 0.2, color = "black"),
+            axis.ticks = element_line(linewidth = 0.2, color = "black"),
+            axis.text        = element_text(size = base_size, color = "black"),
+            axis.title       = element_text(size = base_size, color = "black"),
             axis.title.y = element_blank(),
-            legend.position = "top",
-            plot.title = element_text(size = 15, face = "bold", hjust = 0.5)) -> histdiff_plot
+            # Legend
+            legend.title     = element_text(size = base_size, face = "bold"),
+            legend.text      = element_text(size = base_size),
+            legend.key.size  = unit(0.2, "cm"),
+            legend.background = element_blank(),
+            legend.position  = "top",
+            legend.direction = "horizontal",
+            # Facets
+            strip.background = element_blank(),
+            strip.text       = element_text(size = base_size, color = "black"),
+            strip.placement = "outside") -> histdiff_plot
 
     if ( (length(mids_gray) > 0) & shade ){
       histdiff_plot +

@@ -1,3 +1,10 @@
+#' @importFrom SummarizedExperiment colData assay assay<-
+#' @importFrom Matrix cbind2
+#' @importFrom lme4 ranef
+#' @importFrom stats model.matrix
+#' @importFrom MSqRob getCoef
+
+
 partialResiduals <- function(sce, covariate, msqrob_models, msqrob_formula) {
   # Fixed or mixed model?
   if (!is.null(lme4::findbars(msqrob_formula))) {

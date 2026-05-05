@@ -1,4 +1,8 @@
-# Create a histogram to fit the gams
+#' @importFrom graphics hist
+#' @importFrom utils globalVariables
+
+utils::globalVariables(c("counts", "n"))
+
 createCounts <- function(x, colDat, covariate, minObs = 50, bins = 25){
 
   if (all(is.na(x))) {

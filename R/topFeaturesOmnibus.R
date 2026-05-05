@@ -1,14 +1,16 @@
+#' @importFrom MSqRob getContrast getFitMethod getCoef
+
 topFeaturesOmnibus <-
   function (models, contrasts, adjust.method = "BH", sort = TRUE,
             alpha = 1)
   {
-    
+
     qrL <- qr(contrasts)
     Lh <- qr.Q(qrL)[,1:qrL$rank]
     logFCs <- apply(contrasts, 2, function(models, L) sapply(models, getContrast, L = L), models = models)
-    
-    
-    
+
+
+
     full_coef <- rownames(contrasts)
     full_varcov <- matrix(0, nrow = length(full_coef), ncol = length(full_coef),
                            dimnames = list(full_coef, full_coef)
@@ -17,14 +19,14 @@ topFeaturesOmnibus <-
                     function(model, Lh, r){
                       if (getFitMethod(model)=="fitError")
                         return(NA) else {
-                          cfs <- getCoef(model) 
+                          cfs <- getCoef(model)
                           present_cfs <- intersect(names(cfs), full_coef)
                           varcov <- full_varcov
                           ## fill out missing coefficients to allow matrix multiplication
                           varcov[present_cfs,present_cfs] <- as.matrix(getVcovUnscaled(model))
                           cfs[setdiff(full_coef, names(cfs))] <- 0
                           cfs[full_coef]
-                          
+
                           est <- cfs %*% Lh
                           varEst <- t(Lh)%*%(varcov * getVarPosterior(model))%*%Lh
                           if (inherits(try(solve(varEst), silent = TRUE), "try-error")) return(NA)
@@ -51,7 +53,7 @@ topFeaturesOmnibus <-
   }
 
 # setGeneric("omnibusTest",function(object,...) standardGeneric("omnibusTest"))
-# 
+#
 # setMethod("omnibusTest","QFeatures",
 #           function(object,
 #                    i,

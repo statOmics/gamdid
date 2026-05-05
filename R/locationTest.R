@@ -1,3 +1,10 @@
+#' @importFrom stats as.formula model.matrix
+#' @importFrom MSqRob msqrob hypothesisTest makeContrast
+#' @importFrom SummarizedExperiment colData rowData
+#' @importFrom lme4 ranef
+#' @importFrom utils combn
+
+
 locationTest <- function(sce, covariate, nuisance, ...) {
   # Create the msqrob formula
   if (is.null(nuisance)) {

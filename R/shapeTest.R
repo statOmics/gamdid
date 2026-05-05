@@ -1,5 +1,7 @@
+#' @importFrom SummarizedExperiment colData assay
+#' @importFrom stats poisson setNames
+#'
 #' @include shapeContrast.R waldTest.R
-NULL
 
 shapeTest <- function(sce, covariate, minObs = 50, bins = 25, tol = 1e-8){
   colDat <- colData(sce)

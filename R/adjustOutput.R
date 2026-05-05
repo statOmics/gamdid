@@ -1,3 +1,7 @@
+#' @importFrom stats p.adjust
+#' @importFrom stageR stageR stageWiseAdjustment getAdjustedPValues
+
+
 adjustOutput <- function(pval, pval_shape, pval_location,
                           adjust = T, alpha) {
   if (adjust) {

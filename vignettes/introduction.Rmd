@@ -21,6 +21,7 @@ library(ggplot2)
 library(MultiAssayExperiment)
 library(msqrob2)
 library(mgcv)
+library(lme4)
 library(harmonicmeanp)
 library(stageR)
 ```

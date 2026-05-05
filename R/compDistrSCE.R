@@ -1,5 +1,6 @@
+#' @importFrom SummarizedExperiment assays assays<- assay rowData rowData<- metadata metadata<-
+
 #' @include locationTest.R partialResiduals.R shapeTest.R aggregatePvals.R adjustOutput.R
-NULL
 
 compDistrSCE <- function(sce, covariate, nuisance = NULL, minObs = 50,
                          bins = 25, adjust = T, alpha = 0.05, ...){

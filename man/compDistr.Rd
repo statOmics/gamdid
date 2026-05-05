@@ -2,10 +2,24 @@
 % Please edit documentation in R/compDistr-methods.R
 \name{compDistr,SummarizedExperiment-method}
 \alias{compDistr,SummarizedExperiment-method}
+\alias{compDistr}
+\alias{compDistr,QFeatures-method}
 \title{Compare distributions}
 \usage{
 \S4method{compDistr}{SummarizedExperiment}(
   object,
+  covariate,
+  nuisance = NULL,
+  minObs = 50,
+  bins = 25,
+  adjust = T,
+  alpha = 0.05,
+  ...
+)
+
+\S4method{compDistr}{QFeatures}(
+  object,
+  i,
   covariate,
   nuisance = NULL,
   minObs = 50,
@@ -30,9 +44,18 @@ need to be compared}
 \item{adjust}{if TRUE, return output adjusted for multiple testing}
 
 \item{alpha}{level of significance}
+
+\item{i}{\code{character} or \code{integer} to specify the element of the \code{QFeatures} that
+contains the log expression intensities that will be modelled.}
+}
+\value{
+A \code{SingleCellExperiment} or a \code{QFeatures} instance with the GAM objects and comparisons.
 }
 \description{
-This functions compares the distributions between all the levels a covariate
-using GAMs. To gain power in detecting pure mean shifts, the result is
-aggregated with a location analysis using msqrob2
+This functions compares the distributions between all levels a covariate.
+The sample space is descretized and Poisson GAMs are fitted for inference.
+The resulting GAM p-value is aggregated with the with an msqrob2 p value.
+}
+\author{
+Lucas Beerland
 }

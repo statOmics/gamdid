@@ -1,23 +1,34 @@
-#' @include compDistrSCE.R
-NULL
-
-
 #' Compare distributions
 #'
-#' This functions compares the distributions between all the levels a covariate
-#' using GAMs. To gain power in detecting pure mean shifts, the result is
-#' aggregated with a location analysis using msqrob2
+#' @description
+#' This functions compares the distributions between all levels a covariate.
+#' The sample space is descretized and Poisson GAMs are fitted for inference.
+#' The resulting GAM p-value is aggregated with the with an msqrob2 p value.
 #'
+#' @include compDistrSCE.R
+#'
+#' @aliases compDistr compDistr,SummarizedExperiment-method compDistr,QFeatures-method
+#'
+#' @author Lucas Beerland
 #'
 #' @param object `SingleCellExperiment` or `QFeatures` instance
+#'
 #' @param covariate Column in the colData of the object of which the levels
 #' need to be compared
+#'
 #' @param nuisance Formula for covariates you want to correct for
+#'
 #' @param minObs Minimal number of observation in each group needed to fit GAM
+#'
 #' @param bins Number of bins in the histogram to which the GAMs are fitted
+#'
 #' @param adjust if TRUE, return output adjusted for multiple testing
+#'
 #' @param alpha level of significance
+#'
 #' @export
+#'
+#' @rdname compDistr
 
 setMethod(
   "compDistr", "SummarizedExperiment",
@@ -38,6 +49,7 @@ setMethod(
 #'
 #' @return A `SingleCellExperiment` or a `QFeatures` instance with the GAM objects and comparisons.
 #' @export
+#' @rdname compDistr
 
 setMethod(
   "compDistr", "QFeatures",

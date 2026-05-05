@@ -5,8 +5,8 @@ partialResiduals <- function(sce, covariate, msqrob_models, msqrob_formula) {
     mock <- data.frame(colData(sce), y = 0)
     mock_fit <- lme4::lmer(paste0("y~",as.character(msqrob_formula)[2]), data = mock)
 
-    X <- lme4::getME(mock_fit, "X")
-    Z <- lme4::getME(mock_fit, "Z")
+    X <- getME(mock_fit, "X")
+    Z <- getME(mock_fit, "Z")
     ## remove the covariate effect
     X[, grepl(covariate, colnames(X))] <- 0
     X[, 1] <- 1

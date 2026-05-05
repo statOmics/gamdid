@@ -1,20 +1,27 @@
+#' Interpretable visualization of the GAM fit of one feature
+#'
+#' @description This function visualizes the histograms and the fitted GAMs used
+#'              for inference. Shaded regions indicate differential regions in the distribution.
+#'
 #' @include visFitSCE.R
-NULL
-
-#' Visualise the fit of one feature
 #'
-#' This functions visualizes the histogram and the fitted GAMs used for the
-#' distributional analysis. If there is a significant difference in distribution,
-#' the shaded regions pinpoint regions that drive the significant difference.
+#' @aliases visFit visFit,SummarizedExperiment-method visFit,QFeatures-method
 #'
+#' @author Lucas Beerland
 #'
 #' @param sce Single cell experiment object
+#'
 #' @param feature The name of feature (or the number of the row of the feature)
 #' that should be visualized
 #' @param plot hist or diff, specify the plot you want
+#'
 #' @param shade if TRUE differential regions are marked with shades
-#' @return Interpretable visualisation
+#'
+#' @return ggplot object or list containing ggplot objects for pairwise comparisons
+#'
 #' @export
+#'
+#' @rdname visFit
 
 setMethod(
   "visFit", "SummarizedExperiment",
@@ -31,7 +38,10 @@ setMethod(
 #'        contains the log expression intensities that will be modelled.
 #'
 #' @return A `SingleCellExperiment` or a `QFeatures` instance with the GAM objects and comparisons.
+#'
 #' @export
+#'
+#' @rdname visFit
 
 setMethod(
   "visFit", "QFeatures",

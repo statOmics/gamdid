@@ -1,3 +1,7 @@
+#' @include compDistrSCE.R
+NULL
+
+
 #' Compare distributions
 #'
 #' This functions compares the distributions between all the levels a covariate

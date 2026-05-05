@@ -1,18 +1,22 @@
 Package: gamdid
-Title: What the Package Does (One Line, Title Case)
+Title: Inference and visualization for differential distribution analysis in single cell proteomics
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    c(
+    person(given = "Lucas",      family = "Beerland",     email = "lucas.beerland@ugent.be",      role = c("aut", "cre")),
+    person(given = "Stijn",      family = "Vandenbulcke", email = "stijn.vandenbulcke@ugent.be",  role = c("aut")),
+    person(given = "Christophe", family = "Vanderaa",     email = "christophe.vanderaa@ugent.be", role = c("aut")),
+    person(given = "Lennart",    family = "Martens",      email = "lennart.martens@ugent.be",     role = c("aut")),
+    person(given = "Lieven",     family = "Clement",      email = "lieven.clement@ugent.be",      role = c("aut")))
+Description: gamdid provides inference and interpretable visualizations for comparing distributions in single cell proteomics data. It recasts the problem of density estimation in Poisson regression and leverages the GAM framework of the mgcv package to flexibly model distributions and generate a GAM p value. This GAM p value is aggregated with the msqrob2 p value via harmonic mean p to improve power for mean shifts. The GAM fits can be used for interpretable visualization and detection of differential regions in the distribution. gamdid also supports omnibus testing across more than 2 groups, with posthoc pairwise comparisons via stagewise testing.
+License: Artistic-2.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Imports:
   dplyr,
   ggplot2,
-  scp,
+  MultiAssayExperiment,
   msqrob2,
   harmonicmeanp,
   stageR,
@@ -23,5 +27,22 @@ LazyData: true
 Suggests: 
     knitr,
     rmarkdown,
-    scpdata
+    scpdata,
+    testthat
 VignetteBuilder: knitr
+Collate: 
+    'adjustOutput.R'
+    'aggregatePvals.R'
+    'allGenerics.R'
+    'waldTest.R'
+    'shapeContrast.R'
+    'shapeTest.R'
+    'partialResiduals.R'
+    'locationTest.R'
+    'compDistrSCE.R'
+    'compDistr-methods.R'
+    'createCounts.R'
+    'pairwiseShapeTests.R'
+    'topFeaturesOmnibus.R'
+    'visFitSCE.R'
+    'visFit-methods.R'

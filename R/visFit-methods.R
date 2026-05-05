@@ -1,3 +1,6 @@
+#' @include visFitSCE.R
+NULL
+
 #' Visualise the fit of one feature
 #'
 #' This functions visualizes the histogram and the fitted GAMs used for the

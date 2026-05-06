@@ -6,11 +6,13 @@
 \alias{visFit,QFeatures-method}
 \title{Interpretable visualization of the GAM fit of one feature}
 \usage{
-\S4method{visFit}{SummarizedExperiment}(object, feature, plot = "hist", shade = TRUE, ...)
+\S4method{visFit}{SummarizedExperiment}(object, feature, plot = "hist", shade = TRUE)
 
-\S4method{visFit}{QFeatures}(object, i, feature, plot = "hist", shade = TRUE, ...)
+\S4method{visFit}{QFeatures}(object, i, feature, plot = "hist", shade = TRUE)
 }
 \arguments{
+\item{object}{\code{SingleCellExperiment} or \code{QFeatures} instance}
+
 \item{feature}{The name of feature (or the number of the row of the feature)
 that should be visualized}
 
@@ -20,8 +22,6 @@ that should be visualized}
 
 \item{i}{\code{character} or \code{integer} to specify the element of the \code{QFeatures} that
 contains the log expression intensities that will be modelled.}
-
-\item{sce}{Single cell experiment object}
 }
 \value{
 ggplot object or list containing ggplot objects for pairwise comparisons

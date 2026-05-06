@@ -26,9 +26,14 @@
 #'
 #' @param alpha level of significance
 #'
+#' @param ... additional arguments passed to the msqrob2() function
+#'
 #' @export
 #'
 #' @rdname compDistr
+#'
+#' @importFrom MultiAssayExperiment getWithColData metadata metadata<-
+#' @importFrom methods is
 
 setMethod(
   "compDistr", "SummarizedExperiment",

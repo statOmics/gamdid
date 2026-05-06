@@ -9,7 +9,7 @@
 #'
 #' @author Lucas Beerland
 #'
-#' @param sce Single cell experiment object
+#' @param object `SingleCellExperiment` or `QFeatures` instance
 #'
 #' @param feature The name of feature (or the number of the row of the feature)
 #' that should be visualized
@@ -22,15 +22,17 @@
 #' @export
 #'
 #' @rdname visFit
+#'
+#' @importFrom MultiAssayExperiment getWithColData metadata metadata<-
+#' @importFrom methods is
 
 setMethod(
   "visFit", "SummarizedExperiment",
   function(object,
            feature,
            plot = "hist",
-           shade = TRUE,
-           ...){
-    visFitSCE(sce = object, feature = feature, plot = plot, shade = shade, ...)
+           shade = TRUE){
+    visFitSCE(sce = object, feature = feature, plot = plot, shade = shade)
   }
 )
 
@@ -49,9 +51,8 @@ setMethod(
            i,
            feature,
            plot = "hist",
-           shade = TRUE,
-           ...){
+           shade = TRUE){
     sce <- getWithColData(object, i)
-    visFitSCE(sce = sce, feature = feature, plot = plot, shade = shade, ...)
+    visFitSCE(sce = sce, feature = feature, plot = plot, shade = shade)
   }
 )

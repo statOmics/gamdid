@@ -1,4 +1,5 @@
-#' @importFrom MSqRob getContrast getFitMethod getCoef
+#' @importFrom msqrob2 getContrast getFitMethod getCoef getVcovUnscaled getVarPosterior getDfPosterior
+#' @importFrom stats na.exclude pf
 
 topFeaturesOmnibus <-
   function (models, contrasts, adjust.method = "BH", sort = TRUE,

@@ -1,4 +1,4 @@
-#' @importFrom SummarizedExperiment assays assays<- assay rowData rowData<- metadata metadata<-
+#' @importFrom SummarizedExperiment assays assays<- assay rowData rowData<-
 
 #' @include locationTest.R partialResiduals.R shapeTest.R aggregatePvals.R adjustOutput.R
 

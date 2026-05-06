@@ -1,15 +1,13 @@
 test_that("compute a matrix", {
-  leduc <- get_data()
-  out_location <- locationTest(sce = getWithColData(leduc, "proteins_norm"), covariate = "SampleType", nuisance = NULL)
-  out_shape <- shapeTest(sce = getWithColData(leduc, "proteins_norm"), covariate = "SampleType")
+  out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType", nuisance = NULL)
+  out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
   expect_true(is(out, "matrix"))
 }
 )
 test_that("compute the correct p values", {
-  leduc <- get_data()
-  out_location <- locationTest(sce = getWithColData(leduc, "proteins_norm"), covariate = "SampleType", nuisance = ~Set)
-  out_shape <- shapeTest(sce = getWithColData(leduc, "proteins_norm"), covariate = "SampleType")
+  out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType", nuisance = ~Set)
+  out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
   expect_equal(out, structure(c(NA, NA, NA, NA, NA, NA, 1.57881004892806e-07, NA,
                                 0.156430438707597, 1.7235777530268e-06), dim = c(10L, 1L), dimnames = list(
@@ -18,10 +16,9 @@ test_that("compute the correct p values", {
 )
 
 test_that("compute the correct p values", {
-  leduc <- get_data()
-  leduc$Field <- as.factor(leduc$Field)
-  out_location <- locationTest(sce = getWithColData(leduc, "proteins_norm"), covariate = "Field", nuisance = NULL)
-  out_shape <- shapeTest(sce = getWithColData(leduc, "proteins_norm"), covariate = "Field")
+  leduc_testdata$Field <- as.factor(leduc_testdata$Field)
+  out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field", nuisance = NULL)
+  out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
   expect_equal(out, structure(c(NA, NA, NA, NA, NA, NA, 8.35753033439263e-09, 0.448606215296766,
                                 0.0181856567593166, 0.263542908819706, NA, NA, NA, NA, NA, NA,

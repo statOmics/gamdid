@@ -1,8 +1,8 @@
 #' @importFrom SummarizedExperiment colData assay assay<-
 #' @importFrom Matrix cbind2
-#' @importFrom lme4 ranef
+#' @importFrom lme4 ranef getME
 #' @importFrom stats model.matrix
-#' @importFrom MSqRob getCoef
+#' @importFrom msqrob2 getCoef
 
 
 partialResiduals <- function(sce, covariate, msqrob_models, msqrob_formula) {

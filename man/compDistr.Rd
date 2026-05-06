@@ -45,6 +45,8 @@ need to be compared}
 
 \item{alpha}{level of significance}
 
+\item{...}{additional arguments passed to the msqrob2() function}
+
 \item{i}{\code{character} or \code{integer} to specify the element of the \code{QFeatures} that
 contains the log expression intensities that will be modelled.}
 }

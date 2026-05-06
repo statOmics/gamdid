@@ -1,3 +1,1 @@
-get_data <- function() {
-  readRDS(test_path("data", "data_unittest.rds"))
-}
+leduc_testdata <- readRDS(test_path("data", "data_unittest.rds"))

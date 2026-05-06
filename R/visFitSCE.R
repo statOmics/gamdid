@@ -1,16 +1,15 @@
-#' Visualise the fit of one feature
-#'
-#' This functions visualizes the histogram and the fitted GAMs used for the
-#' distributional analysis. If there is a significant difference in distribution,
-#' the shaded regions pinpoint regions that drive the significant difference.
-#'
-#'
-#' @param sce Single cell experiment object
-#' @param feature The name of feature (or the number of the row of the feature)
-#' that should be visualized
-#' @param plot hist or diff, specify the plot you want
-#' @return Interpretable visualisation
-#' @export
+#' @importFrom MultiAssayExperiment metadata
+#' @importFrom dplyr filter
+#' @importFrom stats predict qnorm
+#' @importFrom ggplot2 ggplot geom_col aes geom_line labs theme_bw theme element_text element_line element_blank geom_rect geom_hline facet_wrap ggtitle scale_color_manual scale_fill_manual %+replace%
+#' @importFrom grid unit
+#' @importFrom utils globalVariables
+#' @importFrom mgcv gam
+
+#' @include createCounts.R
+
+utils::globalVariables(c("covariate", "midsC", "carrier", ".data", "fit", "xmin", "xmax"))
+
 visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
   covar <- metadata(sce)$covariate
   bins <- metadata(sce)$bins
@@ -24,7 +23,7 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
   dat <- createCounts(x = assay_dat, colDat = colData(sce),
                            covariate = covar, bins = bins, minObs = 0)
 
-  fit_gam <- mgcv::gam(
+  fit_gam <- gam(
     counts ~ covariate + s(midsC, by = covariate) + offset(carrier),
     data = dat,
     family = poisson(),
@@ -34,7 +33,7 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
   names(plot_list) <- comps
   for (comp in comps){
     comp_levels <- gsub(covar,"",unlist(strsplit(comp, "_VS_")))
-    hist_dat <- dat %>% filter(covariate %in% comp_levels)
+    hist_dat <- dat |> filter(covariate %in% comp_levels)
   # Create difference smoother and confidence bands
   ## create an even grid
   grid <- seq(min(hist_dat$midsC), max(hist_dat$midsC), length.out = 100)

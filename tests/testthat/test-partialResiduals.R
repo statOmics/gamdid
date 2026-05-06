@@ -1,8 +1,7 @@
 test_that("returns a SingleCellExperiment", {
-  leduc <- get_data()
-  inp <- locationTest(sce = getWithColData(leduc, "proteins_norm"),
+  inp <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"),
                       covariate = "SampleType", nuisance = ~-1+lcbatch)
-  out <- partialResiduals(sce = getWithColData(leduc, "proteins_norm"),
+  out <- partialResiduals(sce = getWithColData(leduc_testdata, "proteins_norm"),
                           covariate = "SampleType",
                           msqrob_models = inp$msqrob_models,
                           msqrob_formula = inp$msqrob_formula)
@@ -11,10 +10,9 @@ test_that("returns a SingleCellExperiment", {
 )
 
 test_that("compute the correct partial residuals", {
-  leduc <- get_data()
-  inp <- locationTest(sce = getWithColData(leduc, "proteins_norm"),
+  inp <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"),
                       covariate = "SampleType", nuisance = ~-1+lcbatch)
-  out <- partialResiduals(sce = getWithColData(leduc, "proteins_norm"),
+  out <- partialResiduals(sce = getWithColData(leduc_testdata, "proteins_norm"),
                           covariate = "SampleType",
                           msqrob_models = inp$msqrob_models,
                           msqrob_formula = inp$msqrob_formula)
@@ -38,10 +36,9 @@ test_that("compute the correct partial residuals", {
 )
 
 test_that("compute the correct partial residuals (2)", {
-  lleduc <- get_data()
-  inp <- locationTest(sce = getWithColData(leduc, "proteins_norm"),
+  inp <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"),
                       covariate = "SampleType", nuisance = ~(1|Set))
-  out <- partialResiduals(sce = getWithColData(leduc, "proteins_norm"),
+  out <- partialResiduals(sce = getWithColData(leduc_testdata, "proteins_norm"),
                           covariate = "SampleType",
                           msqrob_models = inp$msqrob_models,
                           msqrob_formula = inp$msqrob_formula)
@@ -65,19 +62,18 @@ test_that("compute the correct partial residuals (2)", {
 )
 
 test_that("assay dimensions are preserved", {
-  leduc <- get_data()
-  inp <- locationTest(sce = getWithColData(leduc, "proteins_norm"),
+  inp <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"),
                       covariate = "SampleType", nuisance = ~(1|Set))
-  out <- partialResiduals(sce = getWithColData(leduc, "proteins_norm")[1:10,],
+  out <- partialResiduals(sce = getWithColData(leduc_testdata, "proteins_norm")[1:10,],
                           covariate = "SampleType",
                           msqrob_models = inp$msqrob_models,
                           msqrob_formula = inp$msqrob_formula)
-  expect_identical(dim(assay(out)), dim(assay(getWithColData(leduc, "proteins_norm"))))
+  expect_identical(dim(assay(out)), dim(assay(getWithColData(leduc_testdata, "proteins_norm"))))
 }
 )
 
 test_that("Handles NA values", {
-  leduc_error <- getWithColData(get_data(), "proteins_norm")
+  leduc_error <- getWithColData(leduc_testdata, "proteins_norm")
   assay(leduc_error)[1,] <- NA
   inp_error <- locationTest(sce = leduc_error,
                       covariate = "SampleType", nuisance = ~(1|Set))

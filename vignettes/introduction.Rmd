@@ -1,8 +1,16 @@
 ---
-title: "introduction"
-output: rmarkdown::html_vignette
+title: "Introduction to gamdid"
+author:
+- name: Lucas Beerland
+output:
+  BiocStyle::html_document:
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: show
 vignette: >
-  %\VignetteIndexEntry{introduction}
+  %\VignetteIndexEntry{A. Example to introduce gamdid}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -28,10 +36,15 @@ library(stageR)
 
 ```{r}
 leduc <- readRDS(file = "../tests/testthat/data/data_unittest.rds")
-leduc_dd <- compDistr(object = leduc,i= "proteins_norm",covariate = "Field", adjust = T, nuisance = ~ (1|Set), minObs = 30)
+leduc_dd <- compDistr(object = leduc,i= "proteins_norm",covariate = "Field", adjust = TRUE, nuisance = ~ (1|Set), minObs = 30)
 rowData(leduc_dd[["proteins_norm"]])
 metadata(leduc_dd[["proteins_norm"]])
 
 visFit(object = leduc_dd[["proteins_norm"]], feature = 7, plot = "hist")
 visFit(object = leduc_dd[["proteins_norm"]], feature = 7, plot = "diff")
 ```
+
+```{r}
+sessionInfo()
+```
+

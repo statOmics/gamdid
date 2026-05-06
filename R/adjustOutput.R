@@ -3,15 +3,15 @@
 
 
 adjustOutput <- function(pval, pval_shape, pval_location,
-                          adjust = T, alpha) {
+                          adjust = TRUE, alpha) {
   if (adjust) {
     if (ncol(pval) < 2) {
       p_adj <- apply(pval, 2, p.adjust, method = "fdr")
     } else {
       sr <- stageR(pScreen = pval[, "omnibus"],
                    pConfirmation = pval[, -1])
-      sr_adj <- stageWiseAdjustment(sr, method = "holm", alpha = alpha, allowNA = T)
-      p_adj_raw <- getAdjustedPValues(sr_adj, onlySignificantGenes = FALSE, order = F)
+      sr_adj <- stageWiseAdjustment(sr, method = "holm", alpha = alpha, allowNA = TRUE)
+      p_adj_raw <- getAdjustedPValues(sr_adj, onlySignificantGenes = FALSE, order = FALSE)
       # keep the NA p-values that are removed
       p_adj <- matrix(NA_real_, nrow = nrow(pval), ncol = ncol(p_adj_raw),
                                dimnames = list(rownames(pval), colnames(p_adj_raw)))

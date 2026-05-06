@@ -32,6 +32,23 @@ A \code{SingleCellExperiment} or a \code{QFeatures} instance with the GAM object
 This function visualizes the histograms and the fitted GAMs used
 for inference. Shaded regions indicate differential regions in the distribution.
 }
+\examples{
+
+# Load example data
+# The data are a SummarizedExperiment containing an assay
+# named "assay" with a subset of MaxQuant preprocessed protein level data.
+# The variable SampleType in the colData of the Feature object
+# contains information on the sampletype (Monocyte or Melanoma).
+# The variable Set represents different MS runs.
+data(pe)
+
+# Compare distributions of different SampleTypes while correcting for Set effect
+pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~ Set)
+
+# Visualize a feature for which a GAM model could be fitted
+visFit(pe_dd, feature = 20)
+
+}
 \author{
 Lucas Beerland
 }

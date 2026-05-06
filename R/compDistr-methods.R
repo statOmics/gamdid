@@ -11,6 +11,22 @@
 #'
 #' @author Lucas Beerland
 #'
+#' @examples
+#'
+#' # Load example data
+#' # The data are a SummarizedExperiment containing an assay
+#' # named "assay" with a subset of MaxQuant preprocessed protein level data.
+#' # The variable SampleType in the colData of the Feature object
+#' # contains information on the sampletype (Monocyte or Melanoma).
+#' # The variable Set represents different MS runs.
+#' data(pe)
+#'
+#' # Compare distributions of different SampleTypes while correcting for Set effect
+#' pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~ Set)
+#'
+#' # View the results
+#' rowData(pe_dd)$SampleTypeMelanoma_VS_SampleTypeMonocyte
+#'
 #' @param object `SingleCellExperiment` or `QFeatures` instance
 #'
 #' @param covariate Column in the colData of the object of which the levels
@@ -42,7 +58,7 @@ setMethod(
            nuisance = NULL,
            minObs = 50,
            bins = 25,
-           adjust = T,
+           adjust = TRUE,
            alpha = 0.05, ...){
     compDistrSCE(sce = object, covariate = covariate, nuisance = nuisance,
                  minObs = minObs, bins = bins, adjust = adjust, alpha = alpha, ...)
@@ -64,7 +80,7 @@ setMethod(
            nuisance = NULL,
            minObs = 50,
            bins = 25,
-           adjust = T,
+           adjust = TRUE,
            alpha = 0.05, ...){
     sce <- getWithColData(object, i)
     sce_out <- compDistrSCE(sce = sce, covariate = covariate, nuisance = nuisance,

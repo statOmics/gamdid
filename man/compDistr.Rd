@@ -12,7 +12,7 @@
   nuisance = NULL,
   minObs = 50,
   bins = 25,
-  adjust = T,
+  adjust = TRUE,
   alpha = 0.05,
   ...
 )
@@ -24,7 +24,7 @@
   nuisance = NULL,
   minObs = 50,
   bins = 25,
-  adjust = T,
+  adjust = TRUE,
   alpha = 0.05,
   ...
 )
@@ -57,6 +57,23 @@ A \code{SingleCellExperiment} or a \code{QFeatures} instance with the GAM object
 This functions compares the distributions between all levels a covariate.
 The sample space is descretized and Poisson GAMs are fitted for inference.
 The resulting GAM p-value is aggregated with the with an msqrob2 p value.
+}
+\examples{
+
+# Load example data
+# The data are a SummarizedExperiment containing an assay
+# named "assay" with a subset of MaxQuant preprocessed protein level data.
+# The variable SampleType in the colData of the Feature object
+# contains information on the sampletype (Monocyte or Melanoma).
+# The variable Set represents different MS runs.
+data(pe)
+
+# Compare distributions of different SampleTypes while correcting for Set effect
+pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~ Set)
+
+# View the results
+rowData(pe_dd)$SampleTypeMelanoma_VS_SampleTypeMonocyte
+
 }
 \author{
 Lucas Beerland

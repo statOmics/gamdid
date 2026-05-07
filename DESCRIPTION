@@ -26,7 +26,8 @@ Imports:
   harmonicmeanp,
   stageR,
   mgcv,
-  lme4
+  lme4,
+  reformulas
 Depends: 
     R (>= 4.1.0)
 Suggests: 

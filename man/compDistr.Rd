@@ -72,7 +72,7 @@ data(pe)
 pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~ Set)
 
 # View the results
-rowData(pe_dd)$SampleTypeMelanoma_VS_SampleTypeMonocyte
+SummarizedExperiment::rowData(pe_dd)$SampleTypeMelanoma_VS_SampleTypeMonocyte
 
 }
 \author{

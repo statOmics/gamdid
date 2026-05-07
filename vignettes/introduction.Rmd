@@ -30,6 +30,7 @@ library(SummarizedExperiment)
 library(msqrob2)
 library(mgcv)
 library(lme4)
+library(reformulas)
 library(harmonicmeanp)
 library(stageR)
 ```

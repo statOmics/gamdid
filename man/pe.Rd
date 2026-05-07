@@ -11,11 +11,10 @@ A \code{SingleCellExperiment} object with:
 \item{rowData}{Feature-level metadata such as protein identifiers}
 \item{colData}{Sample-level metadata including cell type, carrier status, and experimental conditions}
 }
+}
 \source{
-Simulated data
-
 Leduc A, et al. (2022). \emph{Prioritized single-cell proteomics reveals
-molecular and functional polarity in macrophages.} Molecular Systems Biology.
+molecular and functional polarity in macrophages}. Molecular Systems Biology.
 }
 \usage{
 data(pe)
@@ -26,11 +25,12 @@ prioritized Single-Cell Proteomics by Mass Spectrometry (pSCoPE).
 The data contains quantitative measurements of proteins across
 single cells and carrier channels acquired with a tandem mass tag (TMT)
 labeling strategy.
+}
+\details{
 The dataset is provided as a \code{SingleCellExperiment} object and is commonly used
 to illustrate preprocessing, normalization, and differential analysis
 workflows in single-cell proteomics.
-}
-\details{
+
 The dataset includes both single-cell and carrier channels.
 }
 \references{

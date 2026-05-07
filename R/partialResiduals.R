@@ -1,16 +1,17 @@
 #' @importFrom SummarizedExperiment colData assay assay<-
 #' @importFrom Matrix cbind2
-#' @importFrom lme4 ranef getME
+#' @importFrom lme4 ranef getME lmer
 #' @importFrom stats model.matrix
 #' @importFrom msqrob2 getCoef
+#' @importFrom reformulas findbars
 
 
 partialResiduals <- function(sce, covariate, msqrob_models, msqrob_formula) {
   # Fixed or mixed model?
-  if (!is.null(lme4::findbars(msqrob_formula))) {
+  if (!is.null(findbars(msqrob_formula))) {
     # mock example to create model matrix
     mock <- data.frame(colData(sce), y = 0)
-    mock_fit <- lme4::lmer(paste0("y~",as.character(msqrob_formula)[2]), data = mock)
+    mock_fit <- lmer(paste0("y~",as.character(msqrob_formula)[2]), data = mock)
 
     X <- getME(mock_fit, "X")
     Z <- getME(mock_fit, "Z")

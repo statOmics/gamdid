@@ -2,6 +2,7 @@
 #' @importFrom msqrob2 msqrob hypothesisTest makeContrast
 #' @importFrom SummarizedExperiment colData rowData
 #' @importFrom lme4 ranef
+#' @importFrom reformulas findbars
 #' @importFrom utils combn
 
 
@@ -17,7 +18,7 @@ locationTest <- function(sce, covariate, nuisance, ...) {
   # fit the models
   pe <- msqrob(sce, formula = msqrob_formula, ...)
   # retrieve all coefficient names in correct order
-  if (!is.null(lme4::findbars(msqrob_formula))){
+  if (!is.null(findbars(msqrob_formula))){
     mock <- data.frame(colData(sce), y = 0)
     mock_fit <- lme4::lmer(paste0("y~",as.character(msqrob_formula)[2]), data = mock)
     X <- lme4::getME(mock_fit, "X")

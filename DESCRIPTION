@@ -13,7 +13,7 @@ Description: gamdid provides inference and interpretable visualizations for comp
 License: Artistic-2.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
+RoxygenNote: 8.0.0
 biocViews: Proteomics, MassSpectrometry, DifferentialExpression, SingleCell, SingleCellData
 Imports:
   dplyr,
@@ -48,6 +48,7 @@ Collate:
     'compDistrSCE.R'
     'compDistr-methods.R'
     'createCounts.R'
+    'data-pe.R'
     'pairwiseShapeTests.R'
     'topFeaturesOmnibus.R'
     'visFitSCE.R'

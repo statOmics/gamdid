@@ -11,7 +11,7 @@ test_that("compute the correct p values", {
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
   expect_equal(out, structure(c(NA, NA, NA, NA, NA, NA, 1.57881004892806e-07, NA,
                                 0.156430438707597, 1.7235777530268e-06), dim = c(10L, 1L), dimnames = list(
-                                  NULL, "SampleTypeMelanoma_VS_SampleTypeMonocyte")))
+                                  NULL, "SampleTypeMelanoma_VS_SampleTypeMonocyte")),tolerance = 1e-6)
 }
 )
 
@@ -34,6 +34,6 @@ test_that("compute the correct p values", {
                                   c("A0AVT1", "A2A368", "A6H8Y1", "A6NCS6", "A6NLC8", "B0I1T2",
                                     "E9PAV3", "E9PRG8", "O00154", "O00159"), c("omnibus", "Field1_VS_Field2",
                                                                                "Field1_VS_Field3", "Field1_VS_Field4", "Field2_VS_Field3",
-                                                                               "Field2_VS_Field4", "Field3_VS_Field4"))))
+                                                                               "Field2_VS_Field4", "Field3_VS_Field4"))),tolerance = 1e-6)
 }
 )

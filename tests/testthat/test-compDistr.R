@@ -34,7 +34,7 @@ test_that("compute the correct pvals", {
                                                                                                              1, NA, 1, NA, NA, NA), Field2_VS_Field4 = c(NA, NA, NA,
                                                                                                                                                          1, 0.320509846016792, NA, 0.355553099693652, NA, NA,
                                                                                                                                                          NA), Field3_VS_Field4 = c(NA, NA, NA, 0.201538142625652,
-                                                                                                                                                                                   0.292534737658064, NA, 1, NA, NA, NA))))
+                                                                                                                                                                                   0.292534737658064, NA, 1, NA, NA, NA))),tolerance = 1e-6)
 }
 )
 

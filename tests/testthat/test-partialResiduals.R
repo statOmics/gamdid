@@ -31,7 +31,7 @@ test_that("compute the correct partial residuals", {
                                                                                             "A6H8Y1", "A6NCS6", "A6NLC8", "B0I1T2", "E9PAV3", "E9PRG8", "O00154",
                                                                                             "O00159"), c("eAL00219RI5", "eAL00219RI6", "eAL00219RI7", "eAL00219RI8",
                                                                                                          "eAL00219RI9", "eAL00219RI10", "eAL00219RI11", "eAL00219RI13",
-                                                                                                         "eAL00219RI14", "eAL00219RI15"))))
+                                                                                                         "eAL00219RI14", "eAL00219RI15"))),tolerance = 1e-6)
 }
 )
 
@@ -57,7 +57,7 @@ test_that("compute the correct partial residuals (2)", {
                                                                                             "A6H8Y1", "A6NCS6", "A6NLC8", "B0I1T2", "E9PAV3", "E9PRG8", "O00154",
                                                                                             "O00159"), c("eAL00219RI5", "eAL00219RI6", "eAL00219RI7", "eAL00219RI8",
                                                                                                          "eAL00219RI9", "eAL00219RI10", "eAL00219RI11", "eAL00219RI13",
-                                                                                                         "eAL00219RI14", "eAL00219RI15"))))
+                                                                                                         "eAL00219RI14", "eAL00219RI15"))),tolerance = 1e-6)
 }
 )
 

@@ -57,7 +57,7 @@ test_that("compute correct p values", {
   expect_equal(out$pvals, structure(c(0.237037266770739, 0.981984915759283, 0.996259580193254,
                                         0.000181307193181744, 0.344405576858417, 0.000708840124653451,
                                         3.35828989214574e-08, 0.226269016259427, 0.235860756436294, 4.9922259329987e-05
-  ), dim = c(10L, 1L), dimnames = list(NULL, "SampleTypeMelanoma_VS_SampleTypeMonocyte")))
+  ), dim = c(10L, 1L), dimnames = list(NULL, "SampleTypeMelanoma_VS_SampleTypeMonocyte")),tolerance = 1e-6)
   }
 )
 

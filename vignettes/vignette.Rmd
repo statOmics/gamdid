@@ -1,0 +1,146 @@
+---
+title: "Introduction to gamdid"
+author:
+- name: Lucas Beerland
+output:
+  BiocStyle::html_document:
+    self_contained: yes
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: show
+vignette: >
+  %\VignetteIndexEntry{A. Example to introduce gamdid}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+`gamdid` is an R package for DD analysis on single cell proteomics data.
+It is designed to detect and visualize distributional differences between
+two or more experimental conditions, going beyond conventional mean-based 
+differential  abundance (DA) methods. `gamdid` is sensitive to any form of 
+distributional difference (shape and location).
+
+A key advantage of `gamdid` is its interpretable visualization, which links 
+statistical inference to the specific regions of the distribution that differ 
+between groups. This allows users to not only identify differentially distributed 
+features, but also to understand the nature of the distributional difference. 
+Additionally, `gamdid` supports omnibus testing across more than two groups, 
+followed by post-hoc pairwise comparisons corrected for multiple testing using 
+stagewise testing.
+
+`gamdid` builds on the `mgcv` CRAN package for fitting generalized additive models 
+and on the Bioconductor package `stageR` for stagewise testing. It provides easy 
+integration with `SingleCellExperiment`, `SummarizedExperiment` and `QFeatures` 
+classes, making it straightforward to incorporate into existing single-cell 
+proteomics workflows.
+
+All methodological details underlying `gamdid`, including the Poisson GAM 
+framework, the Wald-type test for distributional differences, and the p-value 
+aggregation strategy, are described in our preprint [@Beerland2026].
+
+
+This vignette provides a step-by-step workflow for using `gamdid` for
+dimensionality reduction of omics data. The main function are:
+
+
+1. `compDistr` performs comparisons between the different groups of the covariate
+of interest.
+
+2. `visFit` visualizes the GAM fits used for inference and marks differential 
+regions with grey shades
+
+Here we apply `gamdid` on single cell proteomics data.
+
+
+# Package installation
+
+`mgcv` can be installed through CRAN.
+`stageR` can be installed from Bioconductor, `gamdid` can be installed from github
+
+```{r, eval=FALSE}
+if(!requireNamespace("mgcv", quietly = TRUE))
+    install.packages("mgcv")
+
+```
+
+```{r setup}
+library(gamdid)
+library(dplyr)
+library(ggplot2)
+library(SummarizedExperiment)
+library(msqrob2)
+library(mgcv)
+library(lme4)
+library(reformulas)
+library(harmonicmeanp)
+library(stageR)
+library(scpdata)
+```
+
+# Load in dataset
+
+We use single cell proteomics data acquired by the Slavov Lab. It contains quantitative information of melanoma cells and monocytes at PSM, peptide and protein level. 
+
+```{r}
+leduc <- leduc2022_pSCoPE()
+
+# save memory and computing time
+leduc <- getWithColData(leduc, i = "proteins_processed")[1:200,]
+```
+
+Leduc is a `QFeatures` object with 138 assays, we will use the `proteins_processed` assay containing quantitative data for 2844 proteins and 1543 single-cells.
+
+# DD for comparing two groups
+
+We use the `compDistr` function for the DD analysis.
+
+```{r}
+leduc_dd <- compDistr(object = leduc, covariate = "SampleType")
+```
+Explore the results
+
+```{r}
+rowData(leduc_dd)
+metadata(leduc_dd)
+```
+Visualize interesting features
+```{r}
+# when you are interested in looking at the most significant features
+dd_sorted <- rowData(leduc_dd)[order(rowData(leduc_dd)$SampleTypeMelanoma_VS_SampleTypeMonocyte),]
+visFit(object = leduc_dd, feature = rownames(dd_sorted)[1], plot = "hist")
+```
+
+# DD for comparing more than two groups
+
+```{r}
+leduc_threewaycomp <- leduc[,!is.na(leduc$Field)]
+leduc_threewaycomp$Field <- as.factor(leduc_threewaycomp$Field)
+leduc_dd_threeway <- compDistr(object = leduc_threewaycomp, covariate = "Field")
+```
+
+Explore the results
+
+```{r}
+rowData(leduc_dd_threeway)
+metadata(leduc_dd_threeway)
+```
+```{r}
+# when you are interested in looking at the most significant features
+dd_threeway_sorted <- rowData(leduc_dd_threeway[order(rowData(leduc_dd_threeway)$omnibus),])
+visFit(object = leduc_dd_threeway, feature = rownames(dd_threeway_sorted)[1], plot = "hist")
+```
+
+
+```{r}
+sessionInfo()
+```

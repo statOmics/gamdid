@@ -6,9 +6,9 @@
 \alias{visFit,QFeatures-method}
 \title{Interpretable visualization of the GAM fit of one feature}
 \usage{
-\S4method{visFit}{SummarizedExperiment}(object, feature, plot = "hist", shade = TRUE)
+\S4method{visFit}{SummarizedExperiment}(object, feature, plot = "hist", shade = TRUE, alpha = NULL)
 
-\S4method{visFit}{QFeatures}(object, i, feature, plot = "hist", shade = TRUE)
+\S4method{visFit}{QFeatures}(object, i, feature, plot = "hist", shade = TRUE, alpha = NULL)
 }
 \arguments{
 \item{object}{\code{SingleCellExperiment} or \code{QFeatures} instance}
@@ -19,6 +19,10 @@ that should be visualized}
 \item{plot}{hist or diff, specify the plot you want}
 
 \item{shade}{if TRUE differential regions are marked with shades}
+
+\item{alpha}{significance level for the confidence bands of the difference
+smoother. Default is NULL, then the q-value of the feature-level B-H FDR
+correction is used.}
 
 \item{i}{\code{character} or \code{integer} to specify the element of the \code{QFeatures} that
 contains the log expression intensities that will be modelled.}

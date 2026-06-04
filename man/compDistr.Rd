@@ -12,7 +12,7 @@
   nuisance = NULL,
   minObs = 50,
   bins = 25,
-  adjust = TRUE,
+  adjust = "stagewise",
   alpha = 0.05,
   ...
 )
@@ -24,7 +24,7 @@
   nuisance = NULL,
   minObs = 50,
   bins = 25,
-  adjust = TRUE,
+  adjust = "stagewise",
   alpha = 0.05,
   ...
 )
@@ -41,7 +41,13 @@ need to be compared}
 
 \item{bins}{Number of bins in the histogram to which the GAMs are fitted}
 
-\item{adjust}{if TRUE, return output adjusted for multiple testing}
+\item{adjust}{"stagewise", "contrastwise" or "none". If adjust = "none", all
+raw GAM, msqrob2 and aggregated pvalues are provided without any mutiple testing
+correction. For "stagewise" and "contrastwise", only the aggregated p-values are
+provided. If the covariate consists of two levels, both "stagewise" and "contrastwise"
+produce the same results; for more than two levels "stagewise" performs the
+stagewise testing procedure to address multiple testing, "contrastwise" performs
+B-H fdr correction on every contrast (omnibus test and post-hoc pairwise comparisons)}
 
 \item{alpha}{level of significance}
 

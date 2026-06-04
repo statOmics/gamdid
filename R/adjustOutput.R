@@ -3,8 +3,10 @@
 
 
 adjustOutput <- function(pval, pval_shape, pval_location,
-                          adjust = TRUE, alpha) {
-  if (adjust) {
+                          adjust = "stagewise", alpha) {
+  if (adjust == "contrastwise"){
+    p_adj <- apply(pval, 2, p.adjust, method = "fdr")
+  } else if (adjust == "stagewise") {
     if (ncol(pval) < 2) {
       p_adj <- apply(pval, 2, p.adjust, method = "fdr")
     } else {
@@ -18,7 +20,7 @@ adjustOutput <- function(pval, pval_shape, pval_location,
       p_adj[rownames(p_adj_raw),] <- p_adj_raw
       colnames(p_adj)[1] <- "omnibus"
     }
-  } else {
+  } else if (adjust == "none") {
     colnames(pval_shape) <- paste0(colnames(pval_shape), "_shape")
     colnames(pval_location) <- paste0(colnames(pval_location), "_location")
     colnames(pval) <- paste0(colnames(pval), "_aggregated")
@@ -26,20 +28,19 @@ adjustOutput <- function(pval, pval_shape, pval_location,
   }
 
   if (ncol(pval) < 2){
-    adj_alpha <- alpha
+    pval_vec <- pval
   } else {
-    # calculate the adjusted alpha level
-    if (adjust){
-      pval_vec <- pval[,"omnibus"]
-    } else{
+    if (adjust == "none"){
       pval_vec <- pval[,"omnibus_aggregated"]
+    } else {
+      pval_vec <- pval[,"omnibus"]
     }
-    m <- length(pval_vec[!is.na(pval_vec)])
-    p_sorted <- sort(pval_vec)
-    thresholds <- (1:m) / m * 0.05
-    k <- max(which(p_sorted <= thresholds), 0)
-    adj_alpha <- if (k > 0) thresholds[k] else NA
   }
+  m <- length(pval_vec[!is.na(pval_vec)])
+  p_sorted <- sort(pval_vec)
+  thresholds <- (1:m) / m * 0.05
+  k <- max(which(p_sorted <= thresholds), 0)
+  adj_alpha <- if (k > 0) thresholds[k] else NA
 
   list(pvals = p_adj, adj_alpha = adj_alpha)
 }

@@ -3,7 +3,7 @@
 #' @include locationTest.R partialResiduals.R shapeTest.R aggregatePvals.R adjustOutput.R
 
 compDistrSCE <- function(sce, covariate, nuisance = NULL, minObs = 50,
-                         bins = 25, adjust = TRUE, alpha = 0.05, ...){
+                         bins = 25, adjust = "stagewise", alpha = 0.05, ...){
   if (any(grepl(paste0("\\b",covariate, "\\b"),as.character(nuisance)))) stop("covariate of interest cannot be in nuisance formula")
   if (!is.character(sce[[covariate]]) && !is.factor(sce[[covariate]])) stop("covariate of interest must be a character or factor")
 

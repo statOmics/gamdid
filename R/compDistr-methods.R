@@ -38,7 +38,13 @@
 #'
 #' @param bins Number of bins in the histogram to which the GAMs are fitted
 #'
-#' @param adjust if TRUE, return output adjusted for multiple testing
+#' @param adjust "stagewise", "contrastwise" or "none". If adjust = "none", all
+#' raw GAM, msqrob2 and aggregated pvalues are provided without any mutiple testing
+#' correction. For "stagewise" and "contrastwise", only the aggregated p-values are
+#' provided. If the covariate consists of two levels, both "stagewise" and "contrastwise"
+#' produce the same results; for more than two levels "stagewise" performs the
+#' stagewise testing procedure to address multiple testing, "contrastwise" performs
+#' B-H fdr correction on every contrast (omnibus test and post-hoc pairwise comparisons)
 #'
 #' @param alpha level of significance
 #'
@@ -58,7 +64,7 @@ setMethod(
            nuisance = NULL,
            minObs = 50,
            bins = 25,
-           adjust = TRUE,
+           adjust = "stagewise",
            alpha = 0.05, ...){
     compDistrSCE(sce = object, covariate = covariate, nuisance = nuisance,
                  minObs = minObs, bins = bins, adjust = adjust, alpha = alpha, ...)
@@ -80,7 +86,7 @@ setMethod(
            nuisance = NULL,
            minObs = 50,
            bins = 25,
-           adjust = TRUE,
+           adjust = "stagewise",
            alpha = 0.05, ...){
     sce <- getWithColData(object, i)
     sce_out <- compDistrSCE(sce = sce, covariate = covariate, nuisance = nuisance,

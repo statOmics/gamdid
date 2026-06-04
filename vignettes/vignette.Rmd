@@ -125,7 +125,7 @@ visFit(object = leduc_dd, feature = rownames(dd_sorted)[1], plot = "hist")
 ```{r}
 leduc_threewaycomp <- leduc[,!is.na(leduc$Field)]
 leduc_threewaycomp$Field <- as.factor(leduc_threewaycomp$Field)
-leduc_dd_threeway <- compDistr(object = leduc_threewaycomp, covariate = "Field")
+leduc_dd_threeway <- compDistr(object = leduc_threewaycomp, covariate = "Field", adjust = "contrastwise")
 ```
 
 Explore the results

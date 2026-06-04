@@ -2,7 +2,7 @@ test_that("compute a matrix", {
   out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType", nuisance = NULL)
   out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
-  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = T, alpha = 0.05)
+  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, alpha = 0.05)
   expect_true(is(out_adj$pvals, "matrix"))
 }
 )
@@ -11,7 +11,7 @@ test_that("compute the correct comparisons", {
   out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType", nuisance = NULL)
   out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
-  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = T, alpha = 0.05)
+  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, alpha = 0.05)
   expect_identical(colnames(out_adj$pvals), "SampleTypeMelanoma_VS_SampleTypeMonocyte")
 }
 )
@@ -20,7 +20,7 @@ test_that("compute the correct comparisons if not adjusted", {
   out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType", nuisance = NULL)
   out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
-  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = F, alpha = 0.05)
+  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = "none", alpha = 0.05)
   expect_identical(colnames(out_adj$pvals), c("SampleTypeMelanoma_VS_SampleTypeMonocyte_shape", "SampleTypeMelanoma_VS_SampleTypeMonocyte_location",
                                               "SampleTypeMelanoma_VS_SampleTypeMonocyte_aggregated"))
 }
@@ -31,7 +31,7 @@ test_that("compute the correct comparisons for multiple levels", {
   out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field", nuisance = NULL)
   out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
-  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = T, alpha = 0.05)
+  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, alpha = 0.05)
   expect_identical(colnames(out_adj$pvals), c("omnibus", "Field1_VS_Field2", "Field1_VS_Field3", "Field1_VS_Field4",
                                               "Field2_VS_Field3", "Field2_VS_Field4", "Field3_VS_Field4"))
 }
@@ -42,7 +42,7 @@ test_that("compute the correct comparisons for multiple levels if not adjusted",
   out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field", nuisance = NULL)
   out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
-  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = F, alpha = 0.05)
+  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = "none", alpha = 0.05)
   expect_identical(colnames(out_adj$pvals), c("omnibus_shape", "Field1_VS_Field2_shape", "Field1_VS_Field3_shape",
                                               "Field1_VS_Field4_shape", "Field2_VS_Field3_shape", "Field2_VS_Field4_shape",
                                               "Field3_VS_Field4_shape", "omnibus_location", "Field1_VS_Field2_location",
@@ -59,7 +59,7 @@ test_that("compute the correct p values", {
   out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field", nuisance = NULL)
   out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
-  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = F, alpha = 0.05)
+  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = "none", alpha = 0.05)
   expect_equal(out_adj$pvals, structure(c(NA, NA, NA, NA, NA, NA, 1.02970302066109e-08, 0.645355338416144,
                                           0.0243131618874192, 0.159018157894301, NA, NA, NA, NA, NA, NA,
                                           7.62813598944185e-07, 0.349379221329827, 0.767411608329258, 0.742855803372467,
@@ -112,5 +112,29 @@ test_that("compute the correct p values", {
                                                                                          "Field1_VS_Field4_aggregated", "Field2_VS_Field3_aggregated",
                                                                                          "Field2_VS_Field4_aggregated", "Field3_VS_Field4_aggregated"
                                               ))))
+}
+)
+
+test_that("compute the correct p values contrastwise", {
+  leduc_testdata$Field <- as.factor(leduc_testdata$Field)
+  out_location <- locationTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field", nuisance = NULL)
+  out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field")
+  out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
+  out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = "contrastwise", alpha = 0.05)
+  expect_equal(out_adj$pvals, structure(c(NA, NA, NA, NA, NA, NA, 3.34301213373063e-08, 0.448606215296644,
+                                          0.0363713135333237, 0.351390543317299, NA, NA, NA, NA, NA, NA,
+                                          2.90755682741918e-09, 0.26774801068781, 0.842487173535532, 0.842487173535532,
+                                          NA, NA, NA, NA, NA, NA, 0.000138122134601815, 0.374491529710171,
+                                          0.00862307661805698, 0.125782067607922, NA, NA, NA, NA, NA, NA,
+                                          0.00527251368049507, 0.346708662654341, 0.346708662654341, 0.797205254641515,
+                                          NA, NA, NA, NA, NA, NA, 0.0884872474788192, 0.533115354298752,
+                                          0.0431846755749045, 0.0431846755749045, NA, NA, NA, NA, NA, NA,
+                                          0.0496265694176787, 0.690070486787598, 0.440319600977197, 0.746789108056538,
+                                          NA, NA, NA, NA, NA, NA, 0.533206092442361, 0.591604118425151,
+                                          0.0767816104738106, 0.533206092442361), dim = c(10L, 7L), dimnames = list(
+                                            c("A0AVT1", "A2A368", "A6H8Y1", "A6NCS6", "A6NLC8", "B0I1T2",
+                                              "E9PAV3", "E9PRG8", "O00154", "O00159"), c("omnibus", "Field1_VS_Field2",
+                                                                                         "Field1_VS_Field3", "Field1_VS_Field4", "Field2_VS_Field3",
+                                                                                         "Field2_VS_Field4", "Field3_VS_Field4"))))
 }
 )

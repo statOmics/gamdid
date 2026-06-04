@@ -10,7 +10,7 @@
 
 utils::globalVariables(c("covariate", "midsC", "carrier", ".data", "fit", "xmin", "xmax"))
 
-visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
+visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE, alpha = NULL){
   covar <- metadata(sce)$covariate
   bins <- metadata(sce)$bins
   comps <-  metadata(sce)$comparisons
@@ -47,7 +47,12 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE){
   diff <- as.vector(xdiff %*% fit_gam$coefficients)
   ## construct the confidence band
   sediff <- sqrt(rowSums(xdiff %*% fit_gam$Vp * xdiff))
-  alpha <- metadata(sce)$adj_alpha/2 # two-sided test
+
+  if (is.null(alpha)){
+    alpha <- metadata(sce)$adj_alpha/2 # two-sided test
+  } else {
+    alpha <- alpha/2 # two-sided test
+  }
 
 
   # lwr <- diff + qnorm(alpha/qr(xdiff)$rank)*sediff

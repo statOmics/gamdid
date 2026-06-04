@@ -33,6 +33,10 @@
 #'
 #' @param shade if TRUE differential regions are marked with shades
 #'
+#' @param alpha significance level for the confidence bands of the difference
+#' smoother. Default is NULL, then the q-value of the feature-level B-H FDR
+#' correction is used.
+#'
 #' @return ggplot object or list containing ggplot objects for pairwise comparisons
 #'
 #' @export
@@ -47,8 +51,9 @@ setMethod(
   function(object,
            feature,
            plot = "hist",
-           shade = TRUE){
-    visFitSCE(sce = object, feature = feature, plot = plot, shade = shade)
+           shade = TRUE,
+           alpha = NULL){
+    visFitSCE(sce = object, feature = feature, plot = plot, shade = shade, alpha = alpha)
   }
 )
 
@@ -67,8 +72,9 @@ setMethod(
            i,
            feature,
            plot = "hist",
-           shade = TRUE){
+           shade = TRUE,
+           alpha = NULL){
     sce <- getWithColData(object, i)
-    visFitSCE(sce = sce, feature = feature, plot = plot, shade = shade)
+    visFitSCE(sce = sce, feature = feature, plot = plot, shade = shade, alpha = alpha)
   }
 )

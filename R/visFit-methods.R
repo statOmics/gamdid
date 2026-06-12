@@ -34,8 +34,7 @@
 #' @param shade if TRUE differential regions are marked with shades
 #'
 #' @param alpha significance level for the confidence bands of the difference
-#' smoother. Default is NULL, then the q-value of the feature-level B-H FDR
-#' correction is used.
+#' smoother. Default is NULL, then the B-H FDR adjusted significance level is used.
 #'
 #' @return ggplot object or list containing ggplot objects for pairwise comparisons
 #'

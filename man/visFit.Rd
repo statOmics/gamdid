@@ -21,8 +21,7 @@ that should be visualized}
 \item{shade}{if TRUE differential regions are marked with shades}
 
 \item{alpha}{significance level for the confidence bands of the difference
-smoother. Default is NULL, then the q-value of the feature-level B-H FDR
-correction is used.}
+smoother. Default is NULL, then the B-H FDR adjusted significance level is used.}
 
 \item{i}{\code{character} or \code{integer} to specify the element of the \code{QFeatures} that
 contains the log expression intensities that will be modelled.}

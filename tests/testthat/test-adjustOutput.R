@@ -21,7 +21,7 @@ test_that("compute the correct comparisons if not adjusted", {
   out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "SampleType")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
   out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = "none", alpha = 0.05)
-  expect_identical(colnames(out_adj$pvals), c("SampleTypeMelanoma_VS_SampleTypeMonocyte_shape", "SampleTypeMelanoma_VS_SampleTypeMonocyte_location",
+  expect_identical(colnames(out_adj$pvals), c("SampleTypeMelanoma_VS_SampleTypeMonocyte_GAM", "SampleTypeMelanoma_VS_SampleTypeMonocyte_msqrob2",
                                               "SampleTypeMelanoma_VS_SampleTypeMonocyte_aggregated"))
 }
 )
@@ -43,11 +43,11 @@ test_that("compute the correct comparisons for multiple levels if not adjusted",
   out_shape <- shapeTest(sce = getWithColData(leduc_testdata, "proteins_norm"), covariate = "Field")
   out <- aggregatePvals(pval_shape = out_shape$pvals, pval_location = out_location$pvals)
   out_adj <- adjustOutput(pval = out, pval_shape = out_shape$pvals, pval_location = out_location$pvals, adjust = "none", alpha = 0.05)
-  expect_identical(colnames(out_adj$pvals), c("omnibus_shape", "Field1_VS_Field2_shape", "Field1_VS_Field3_shape",
-                                              "Field1_VS_Field4_shape", "Field2_VS_Field3_shape", "Field2_VS_Field4_shape",
-                                              "Field3_VS_Field4_shape", "omnibus_location", "Field1_VS_Field2_location",
-                                              "Field1_VS_Field3_location", "Field1_VS_Field4_location", "Field2_VS_Field3_location",
-                                              "Field2_VS_Field4_location", "Field3_VS_Field4_location", "omnibus_aggregated",
+  expect_identical(colnames(out_adj$pvals), c("omnibus_GAM", "Field1_VS_Field2_GAM", "Field1_VS_Field3_GAM",
+                                              "Field1_VS_Field4_GAM", "Field2_VS_Field3_GAM", "Field2_VS_Field4_GAM",
+                                              "Field3_VS_Field4_GAM", "omnibus_msqrob2", "Field1_VS_Field2_msqrob2",
+                                              "Field1_VS_Field3_msqrob2", "Field1_VS_Field4_msqrob2", "Field2_VS_Field3_msqrob2",
+                                              "Field2_VS_Field4_msqrob2", "Field3_VS_Field4_msqrob2", "omnibus_aggregated",
                                               "Field1_VS_Field2_aggregated", "Field1_VS_Field3_aggregated",
                                               "Field1_VS_Field4_aggregated", "Field2_VS_Field3_aggregated",
                                               "Field2_VS_Field4_aggregated", "Field3_VS_Field4_aggregated"))
@@ -102,12 +102,12 @@ test_that("compute the correct p values", {
                                           0.7467891098581, NA, NA, NA, NA, NA, NA, 0.39990456933177, 0.591604118425169,
                                           0.0191954026430765, 0.322226530052631), dim = c(10L, 21L), dimnames = list(
                                             c("A0AVT1", "A2A368", "A6H8Y1", "A6NCS6", "A6NLC8", "B0I1T2",
-                                              "E9PAV3", "E9PRG8", "O00154", "O00159"), c("omnibus_shape",
-                                                                                         "Field1_VS_Field2_shape", "Field1_VS_Field3_shape", "Field1_VS_Field4_shape",
-                                                                                         "Field2_VS_Field3_shape", "Field2_VS_Field4_shape", "Field3_VS_Field4_shape",
-                                                                                         "omnibus_location", "Field1_VS_Field2_location", "Field1_VS_Field3_location",
-                                                                                         "Field1_VS_Field4_location", "Field2_VS_Field3_location",
-                                                                                         "Field2_VS_Field4_location", "Field3_VS_Field4_location",
+                                              "E9PAV3", "E9PRG8", "O00154", "O00159"), c("omnibus_GAM",
+                                                                                         "Field1_VS_Field2_GAM", "Field1_VS_Field3_GAM", "Field1_VS_Field4_GAM",
+                                                                                         "Field2_VS_Field3_GAM", "Field2_VS_Field4_GAM", "Field3_VS_Field4_GAM",
+                                                                                         "omnibus_msqrob2", "Field1_VS_Field2_msqrob2", "Field1_VS_Field3_msqrob2",
+                                                                                         "Field1_VS_Field4_msqrob2", "Field2_VS_Field3_msqrob2",
+                                                                                         "Field2_VS_Field4_msqrob2", "Field3_VS_Field4_msqrob2",
                                                                                          "omnibus_aggregated", "Field1_VS_Field2_aggregated", "Field1_VS_Field3_aggregated",
                                                                                          "Field1_VS_Field4_aggregated", "Field2_VS_Field3_aggregated",
                                                                                          "Field2_VS_Field4_aggregated", "Field3_VS_Field4_aggregated"

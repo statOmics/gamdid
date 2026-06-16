@@ -1,46 +1,53 @@
 #' @importFrom stats p.adjust
 #' @importFrom stageR stageR stageWiseAdjustment getAdjustedPValues
 
-
 adjustOutput <- function(pval, pval_shape, pval_location,
-                          adjust = "stagewise", alpha) {
-  if (adjust == "contrastwise"){
-    p_adj <- apply(pval, 2, p.adjust, method = "fdr")
-  } else if (adjust == "stagewise") {
+                         adjust = "stagewise", alpha) {
+    if (adjust == "contrastwise") {
+        p_adj <- apply(pval, 2, p.adjust, method = "fdr")
+    } else if (adjust == "stagewise") {
+        if (ncol(pval) < 2) {
+            p_adj <- apply(pval, 2, p.adjust, method = "fdr")
+        } else {
+            sr <- stageR(
+                pScreen = pval[, "omnibus"],
+                pConfirmation = pval[, -1]
+            )
+            sr_adj <- stageWiseAdjustment(sr,
+                method = "holm", alpha = alpha, allowNA = TRUE
+            )
+            p_adj_raw <- getAdjustedPValues(sr_adj,
+                onlySignificantGenes = FALSE, order = FALSE
+            )
+            ## preserve NA p-values that stageR drops for non-significant features
+            p_adj <- matrix(NA_real_,
+                nrow = nrow(pval), ncol = ncol(p_adj_raw),
+                dimnames = list(rownames(pval), colnames(p_adj_raw))
+            )
+            p_adj[rownames(p_adj_raw), ] <- p_adj_raw
+            colnames(p_adj)[1] <- "omnibus"
+        }
+    } else if (adjust == "none") {
+        colnames(pval_shape) <- paste0(colnames(pval_shape), "_GAM")
+        colnames(pval_location) <- paste0(colnames(pval_location), "_msqrob2")
+        colnames(pval) <- paste0(colnames(pval), "_aggregated")
+        p_adj <- cbind(pval_shape, pval_location, pval)
+    }
+
     if (ncol(pval) < 2) {
-      p_adj <- apply(pval, 2, p.adjust, method = "fdr")
+        pval_vec <- pval
     } else {
-      sr <- stageR(pScreen = pval[, "omnibus"],
-                   pConfirmation = pval[, -1])
-      sr_adj <- stageWiseAdjustment(sr, method = "holm", alpha = alpha, allowNA = TRUE)
-      p_adj_raw <- getAdjustedPValues(sr_adj, onlySignificantGenes = FALSE, order = FALSE)
-      # keep the NA p-values that are removed
-      p_adj <- matrix(NA_real_, nrow = nrow(pval), ncol = ncol(p_adj_raw),
-                               dimnames = list(rownames(pval), colnames(p_adj_raw)))
-      p_adj[rownames(p_adj_raw),] <- p_adj_raw
-      colnames(p_adj)[1] <- "omnibus"
+        if (adjust == "none") {
+            pval_vec <- pval[, "omnibus_aggregated"]
+        } else {
+            pval_vec <- pval[, "omnibus"]
+        }
     }
-  } else if (adjust == "none") {
-    colnames(pval_shape) <- paste0(colnames(pval_shape), "_shape")
-    colnames(pval_location) <- paste0(colnames(pval_location), "_location")
-    colnames(pval) <- paste0(colnames(pval), "_aggregated")
-    p_adj <- cbind(pval_shape, pval_location, pval)
-  }
+    m <- length(pval_vec[!is.na(pval_vec)])
+    p_sorted <- sort(pval_vec)
+    thresholds <- seq_len(m) / m * 0.05
+    k <- max(which(p_sorted <= thresholds), 0)
+    adj_alpha <- if (k > 0) thresholds[k] else NA
 
-  if (ncol(pval) < 2){
-    pval_vec <- pval
-  } else {
-    if (adjust == "none"){
-      pval_vec <- pval[,"omnibus_aggregated"]
-    } else {
-      pval_vec <- pval[,"omnibus"]
-    }
-  }
-  m <- length(pval_vec[!is.na(pval_vec)])
-  p_sorted <- sort(pval_vec)
-  thresholds <- (1:m) / m * 0.05
-  k <- max(which(p_sorted <= thresholds), 0)
-  adj_alpha <- if (k > 0) thresholds[k] else NA
-
-  list(pvals = p_adj, adj_alpha = adj_alpha)
+    list(pvals = p_adj, adj_alpha = adj_alpha)
 }

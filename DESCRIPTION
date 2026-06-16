@@ -1,43 +1,56 @@
 Package: gamdid
-Title: Inference and visualization for differential distribution analysis in single cell proteomics
+Title: Inference and Visualization for Differential Distribution Analysis
+    in Single Cell Proteomics
 Version: 0.99.0
-Authors@R: 
+Authors@R:
     c(
     person(given = "Lucas",      family = "Beerland",     email = "lucas.beerland@ugent.be",      role = c("aut", "cre"), comment = c(ORCID = "0009-0004-2091-6363")),
     person(given = "Stijn",      family = "Vandenbulcke", email = "stijn.vandenbulcke@ugent.be",  role = c("aut")),
     person(given = "Christophe", family = "Vanderaa",     email = "christophe.vanderaa@ugent.be", role = c("aut")),
     person(given = "Lennart",    family = "Martens",      email = "lennart.martens@ugent.be",     role = c("aut")),
     person(given = "Lieven",     family = "Clement",      email = "lieven.clement@ugent.be",      role = c("aut")),
-    person("Ghent University", role = "fnd") )
-Description: gamdid provides inference and interpretable visualizations for comparing distributions in single cell proteomics data. It recasts the problem of density estimation in Poisson regression and leverages the GAM framework of the mgcv package to flexibly model distributions and generate a GAM p value. This GAM p value is aggregated with the msqrob2 p value via harmonic mean p to improve power for mean shifts. The GAM fits can be used for interpretable visualization and detection of differential regions in the distribution. gamdid also supports omnibus testing across more than 2 groups, with posthoc pairwise comparisons via stagewise testing.
+    person("Ghent University", role = "fnd"))
+Description: gamdid provides inference and interpretable visualizations for
+    comparing distributions in single cell proteomics data. It recasts the
+    problem of density estimation as a Poisson regression and leverages the
+    GAM framework of the mgcv package to flexibly model distributions and
+    generate a GAM p-value. This GAM p-value is aggregated with the msqrob2
+    p-value via the harmonic mean p-value to improve power for mean shifts.
+    The GAM fits support interpretable visualization and detection of
+    differential regions in the distribution. gamdid also supports omnibus
+    testing across more than two groups, with post-hoc pairwise comparisons
+    via stagewise testing.
 License: Artistic-2.0
+URL: https://github.com/lbeerland/gamdid
+BugReports: https://github.com/lbeerland/gamdid/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 8.0.0
-biocViews: Proteomics, MassSpectrometry, DifferentialExpression, SingleCell, SingleCellData
+biocViews: Proteomics, MassSpectrometry, DifferentialExpression, SingleCell,
+    StatisticalMethod, Visualization, MultipleComparison
 Imports:
-  dplyr,
-  ggplot2,
-  Matrix,
-  methods,
-  SummarizedExperiment,
-  MultiAssayExperiment,
-  msqrob2,
-  harmonicmeanp,
-  stageR,
-  mgcv,
-  lme4,
-  reformulas
-Depends: 
+    dplyr,
+    ggplot2,
+    Matrix,
+    methods,
+    SummarizedExperiment,
+    MultiAssayExperiment,
+    msqrob2,
+    harmonicmeanp,
+    stageR,
+    mgcv,
+    lme4,
+    reformulas
+Depends:
     R (>= 4.1.0)
-Suggests: 
+Suggests:
     knitr,
     rmarkdown,
     BiocStyle,
     scpdata,
-    testthat
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
-Collate: 
+Collate:
     'adjustOutput.R'
     'aggregatePvals.R'
     'allGenerics.R'
@@ -51,6 +64,8 @@ Collate:
     'createCounts.R'
     'data-pe.R'
     'pairwiseShapeTests.R'
+    'topFeaturesSCE.R'
+    'topFeatures-methods.R'
     'topFeaturesOmnibus.R'
     'visFitSCE.R'
     'visFit-methods.R'

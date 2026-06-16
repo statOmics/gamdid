@@ -3,39 +3,54 @@
 \docType{data}
 \name{pe}
 \alias{pe}
-\title{Example proteomics dataset}
+\title{Example single-cell proteomics dataset}
 \format{
-A \code{SingleCellExperiment} object with:
+A \code{SingleCellExperiment} object with rows corresponding to
+proteins and columns to cells/channels. Key slots:
 \describe{
-\item{assays}{Quantitative protein intensity data}
-\item{rowData}{Feature-level metadata such as protein identifiers}
-\item{colData}{Sample-level metadata including cell type, carrier status, and experimental conditions}
+\item{\code{assay}}{Log-transformed, normalized protein intensity
+matrix (proteins \eqn{\times} cells).}
+\item{\code{rowData}}{Feature-level metadata, including protein
+identifiers.}
+\item{\code{colData}}{Sample-level metadata with the following columns:
+\describe{
+\item{\code{SampleType}}{Cell type label: \code{"Melanoma"} or
+\code{"Monocyte"}.}
+\item{\code{Set}}{MS run identifier, used as a batch covariate in
+examples.}
+}
+}
 }
 }
 \source{
-Leduc A, et al. (2022). \emph{Prioritized single-cell proteomics reveals
-molecular and functional polarity in macrophages}. Molecular Systems Biology.
+Leduc A, et al. (2022). Prioritized single-cell proteomics reveals
+molecular and functional polarity in macrophages.
+\emph{Molecular Systems Biology}.
+\doi{10.15252/msb.202110798}
 }
 \usage{
 data(pe)
 }
 \description{
-A proteomics dataset subsampled from Leduc et al. (2022) generated using
-prioritized Single-Cell Proteomics by Mass Spectrometry (pSCoPE).
-The data contains quantitative measurements of proteins across
-single cells and carrier channels acquired with a tandem mass tag (TMT)
-labeling strategy.
+A \code{SingleCellExperiment} object containing a subset of protein-level
+data from Leduc et al. (2022), generated with prioritized Single-Cell
+Proteomics by Mass Spectrometry (pSCoPE). The dataset is included to
+illustrate the \code{\link{compDistr}} and \code{\link{visFit}} workflow
+in the \pkg{gamdid} package.
 }
 \details{
-The dataset is provided as a \code{SingleCellExperiment} object and is commonly used
-to illustrate preprocessing, normalization, and differential analysis
-workflows in single-cell proteomics.
-
-The dataset includes both single-cell and carrier channels.
+The full Leduc 2022 pSCoPE dataset is available from the
+\pkg{scpdata} Bioconductor package via \code{scpdata::leduc2022_pSCoPE()}.
+The \code{pe} object is a small subset (200 proteins, a selection of cells)
+retained at the \code{proteins_processed} level for fast, reproducible
+examples and unit tests.
 }
 \references{
-Leduc A, Huffman RG, Cantlon JD, et al. (2022).
+Leduc A, Huffman RG, Cantlon JD, Khan S, Slavov N (2022).
 Prioritized single-cell proteomics reveals molecular and functional
-polarity in macrophages. Mol Syst Biol.
+polarity in macrophages. \emph{Mol Syst Biol} \strong{18}, e10798.
+}
+\seealso{
+\code{\link{compDistr}}, \code{\link{visFit}}
 }
 \keyword{datasets}

@@ -1,7 +1,12 @@
 ---
 title: "Introduction to gamdid"
+subtitle: "Differential Distribution Analysis in Single-Cell Proteomics"
 author:
 - name: Lucas Beerland
+  affiliation: Ghent University, Belgium
+  email: lucas.beerland@ugent.be
+package: gamdid
+date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document:
     self_contained: yes
@@ -9,138 +14,336 @@ output:
     toc_float: true
     toc_depth: 3
     code_folding: show
+bibliography: references.bib
 vignette: >
-  %\VignetteIndexEntry{A. Example to introduce gamdid}
+  %\VignetteIndexEntry{Introduction to gamdid}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+  collapse  = TRUE,
+  comment   = "#>",
+  message   = FALSE,
+  warning   = FALSE,
+  fig.align = "center",
+  fig.width = 6,
+  fig.height = 4
 )
 ```
 
 # Introduction
 
-`gamdid` is an R package for DD analysis on single cell proteomics data.
-It is designed to detect and visualize distributional differences between
-two or more experimental conditions, going beyond conventional mean-based 
-differential  abundance (DA) methods. `gamdid` is sensitive to any form of 
-distributional difference (shape and location).
+`r Biocpkg("gamdid")` is an R/Bioconductor package for **differential
+distribution (DD) analysis** in single-cell data. Conventional
+differential abundance methods focus exclusively on detecting mean shifts
+between experimental conditions. `gamdid` is designed to detect *any* form of
+distributional difference (shape and mean differences).
 
-A key advantage of `gamdid` is its interpretable visualization, which links 
-statistical inference to the specific regions of the distribution that differ 
-between groups. This allows users to not only identify differentially distributed 
-features, but also to understand the nature of the distributional difference. 
-Additionally, `gamdid` supports omnibus testing across more than two groups, 
-followed by post-hoc pairwise comparisons corrected for multiple testing using 
-stagewise testing.
+## Key features
 
-`gamdid` builds on the `mgcv` CRAN package for fitting generalized additive models 
-and on the Bioconductor package `stageR` for stagewise testing. It provides easy 
-integration with `SingleCellExperiment`, `SummarizedExperiment` and `QFeatures` 
-classes, making it straightforward to incorporate into existing single-cell 
-proteomics workflows.
+* **GAM workflow** The sample space of each feature is discretized
+  into a histogram, and a Poisson generalized additive model (GAM) is fitted
+  per group using `r CRANpkg("mgcv")`. A Wald-type chi-squared test on the
+  group-specific smoothing splines yields a p-value for inferring
+  any type of distributional difference both in location and in shape, 
+  referred to as the GAM p-value.
+* **P-value aggregation** To increase the power to detect distributional 
+  changes that are strongly driven by differences in the mean, the p-value
+  obtained from the GAM is combined with a p-value derived from the 
+  `r Biocpkg("msqrob2")` framework via the harmonic mean p-value [@Wilson2019]
+* **Nuisance correction** The nuisance effect (e.g. batch or MS run) is removed 
+  from the data before GAM fitting, so the shape test focuses on the covariate 
+  of interest.
+* **Multi-group testing** For covariates with more than two groups,
+  `gamdid` performs an omnibus test followed by post-hoc pairwise comparisons,
+  with multiple testing correction via stagewise testing
+  (`r Biocpkg("stageR")`) or Benjamini–Hochberg FDR [@BH_procedure].
+* **Interpretable visualization** `visFit` overlays the fitted GAM densities
+  on the empirical histograms and marks the differential regions of the
+  distribution with grey shading, directly linking the visualization to the inference.
 
-All methodological details underlying `gamdid`, including the Poisson GAM 
-framework, the Wald-type test for distributional differences, and the p-value 
-aggregation strategy, are described in our preprint [@Beerland2026].
+## Workflow overview
 
+The typical `gamdid` workflow has three steps:
 
-This vignette provides a step-by-step workflow for using `gamdid` for
-dimensionality reduction of omics data. The main function are:
+1. `compDistr()` — fit GAMs and run the distributional comparison.
+2. `topFeatures()` — extract and rank the most significant features.
+3. `visFit()` — visualize the fit for individual features of interest.
 
+`gamdid` integrates seamlessly with the standard Bioconductor single-cell
+proteomics infrastructure: both `SummarizedExperiment` /
+`SingleCellExperiment` objects and the `QFeatures` multi-assay format are
+supported.
 
-1. `compDistr` performs comparisons between the different groups of the covariate
-of interest.
+# Installation
 
-2. `visFit` visualizes the GAM fits used for inference and marks differential 
-regions with grey shades
+To install the development version from GitHub:
 
-Here we apply `gamdid` on single cell proteomics data.
+```{r install_gh, eval=FALSE}
+if (!requireNamespace("remotes", quietly = TRUE))
+    install.packages("remotes")
 
-
-# Package installation
-
-`mgcv` can be installed through CRAN.
-`stageR` can be installed from Bioconductor, `gamdid` can be installed from github
-
-```{r, eval=FALSE}
-if(!requireNamespace("mgcv", quietly = TRUE))
-    install.packages("mgcv")
-
+remotes::install_github("lbeerland/gamdid")
 ```
 
-```{r setup}
+# Load packages
+
+```{r load_packages}
 library(gamdid)
+library(SummarizedExperiment)
+library(scpdata)
 library(dplyr)
 library(ggplot2)
-library(SummarizedExperiment)
-library(msqrob2)
-library(mgcv)
-library(lme4)
-library(reformulas)
-library(harmonicmeanp)
-library(stageR)
-library(scpdata)
 ```
 
-# Load in dataset
+# Example data
 
-We use single cell proteomics data acquired by the Slavov Lab. It contains quantitative information of melanoma cells and monocytes at PSM, peptide and protein level. 
+We use the `pe` dataset bundled with `gamdid`, a small subset of the
+pSCoPE dataset from @Leduc2022 obtained via `r Biocpkg("scpdata")`.
 
-```{r}
-leduc <- leduc2022_pSCoPE()
-
-# save memory and computing time
-leduc <- getWithColData(leduc, i = "proteins_processed")[1:200,]
+```{r load_data}
+data(pe)
+pe
 ```
 
-Leduc is a `QFeatures` object with 138 assays, we will use the `proteins_processed` assay containing quantitative data for 2844 proteins and 1543 single-cells.
+The object contains log-transformed protein intensities for
+`r nrow(pe)` proteins and `r ncol(pe)` cells. The `colData` slot records
+the relevant experimental variables:
 
-# DD for comparing two groups
-
-We use the `compDistr` function for the DD analysis.
-
-```{r}
-leduc_dd <- compDistr(object = leduc, covariate = "SampleType")
-```
-Explore the results
-
-```{r}
-rowData(leduc_dd)
-metadata(leduc_dd)
-```
-Visualize interesting features
-```{r}
-# when you are interested in looking at the most significant features
-dd_sorted <- rowData(leduc_dd)[order(rowData(leduc_dd)$SampleTypeMelanoma_VS_SampleTypeMonocyte),]
-visFit(object = leduc_dd, feature = rownames(dd_sorted)[1], plot = "hist")
+```{r coldata}
+table(pe$SampleType)
+table(pe$Set)
 ```
 
-# DD for comparing more than two groups
+`SampleType` (Melanoma vs. Monocyte) is the biological covariate of interest;
+`Set` identifies the MS run and will be treated as a nuisance variable.
 
-```{r}
-leduc_threewaycomp <- leduc[,!is.na(leduc$Field)]
-leduc_threewaycomp$Field <- as.factor(leduc_threewaycomp$Field)
-leduc_dd_threeway <- compDistr(object = leduc_threewaycomp, covariate = "Field", adjust = "contrastwise")
+# Two-group differential distribution analysis
+
+## Running `compDistr`
+
+The main function is `compDistr`. We compare the protein intensity
+distributions between Melanoma and Monocyte cells, correcting for the MS run
+effect:
+
+```{r compDistr_two}
+pe_dd <- compDistr(
+    object    = pe,
+    covariate = "SampleType",
+    nuisance  = ~ (1|Set)
+)
 ```
 
-Explore the results
+## Inspecting the results
 
-```{r}
-rowData(leduc_dd_threeway)
-metadata(leduc_dd_threeway)
-```
-```{r}
-# when you are interested in looking at the most significant features
-dd_threeway_sorted <- rowData(leduc_dd_threeway[order(rowData(leduc_dd_threeway)$omnibus),])
-visFit(object = leduc_dd_threeway, feature = rownames(dd_threeway_sorted)[1], plot = "hist")
+Results are stored in the `rowData` of the returned object. For a two-group
+comparison, a single column of adjusted p-values is added, named after the
+contrast:
+
+```{r results_two}
+head(rowData(pe_dd)[, "SampleTypeMelanoma_VS_SampleTypeMonocyte", drop = FALSE])
 ```
 
+The `metadata` slot stores summary information about the analysis:
 
-```{r}
+```{r metadata_two}
+metadata(pe_dd)
+```
+
+`adj_alpha` is the Benjamini–Hochberg adjusted significance threshold: the
+largest per-feature threshold at which at most 5% of called features are
+expected to be false positives (the BH step-up threshold).
+
+## Adjustment strategies for two-group comparisons
+
+The `adjust` argument controls how multiple testing correction is applied.
+For a two-group comparison, `adjust = "stagewise"` and
+`adjust = "contrastwise"` are equivalent — both apply Benjamini–Hochberg FDR
+correction to the single pairwise comparison column.
+
+Setting `adjust = "none"` skips multiple testing correction entirely and
+returns raw p-values in three separate columns: `_GAM` (GAM test),
+`_msqrob2` (msqrob2 test), and `_aggregated` (harmonic mean of the two).
+This is useful for exploratory analysis or when you intend to apply your own
+correction.
+
+```{r compDistr_none}
+pe_dd_none <- compDistr(
+    object    = pe,
+    covariate = "SampleType",
+    nuisance  = ~ (1|Set),
+    adjust    = "none"
+)
+head(rowData(pe_dd_none))
+```
+
+The three raw p-value columns share the contrast name as a prefix:
+`_GAM` contains the GAM test p-value, `_msqrob2` the msqrob2 test
+p-value, and `_aggregated` their harmonic mean combination.
+
+## Ranking features with `topFeatures`
+
+`topFeatures` extracts the most significant features from the `rowData` and
+returns them as a sorted `data.frame`. For a two-group comparison, it
+automatically sorts by the single pairwise comparison column:
+
+```{r topFeatures_two}
+topFeatures(pe_dd)
+```
+
+When `adjust = "none"` is used, `topFeatures` requires you to specify `sort.by` explicitly:
+
+```{r topFeatures_none}
+topFeatures(pe_dd_none, sort.by = "SampleTypeMelanoma_VS_SampleTypeMonocyte_aggregated")
+```
+
+## Visualizing individual features
+
+
+```{r vis_hist, fig.cap="Histogram overlay with differential region shading for the most significant feature."}
+top_features <- rownames(topFeatures(pe_dd, n = 10))
+visFit(pe_dd, feature = top_features[1], plot = "hist")
+```
+
+`visFit` produces an interpretable plot for a chosen feature. The default
+`plot = "hist"` overlays the normalized histograms and GAM-fitted densities
+for both groups. Grey shading marks regions where the two densities differ
+significantly at the `adj_alpha` threshold stored in `metadata`. The default
+`adj_alpha`is the Benjamini–Hochberg adjusted significance level from the 
+inference step. The shading can therefore be seen as a second stage 
+in the stagewise testing procedure after the original inference:
+it localizes *where* in the distribution the significant difference occurs.
+If you wish to use a different threshold, pass it via the `alpha` argument:
+
+```{r vis_alpha, eval=FALSE}
+visFit(pe_dd, feature = top_features[1], plot = "hist", alpha = 0.05)
+```
+
+The alternative `plot = "diff"` adds a second panel showing the
+log-ratio of the two fitted densities (the *difference smoother*) with
+confidence bands. Regions where the confidence band excludes zero are
+shaded:
+
+```{r vis_diff, fig.cap="Two-panel plot showing the empirical densities (top) and the difference smoother (bottom)."}
+visFit(pe_dd, feature = top_features[1], plot = "diff")
+```
+
+`visFit` returns plot(s), so you can assign and reuse them:
+
+```{r vis_assign, eval=FALSE}
+p <- visFit(pe_dd, feature = top_features[1], plot = "hist")
+```
+
+# Multi-group analysis (more than two conditions)
+
+When the covariate of interest has more than two levels, `compDistr`
+automatically performs an omnibus test (testing whether *any* pair of groups
+differs) followed by all pairwise post-hoc comparisons.
+
+Here we use the `Field` variable from the `pe` dataset (three levels) to
+illustrate the multi-group workflow:
+
+```{r compDistr_multi}
+pe_multi <- pe[, !is.na(pe$Field)]
+pe_multi$Field <- as.factor(pe_multi$Field)
+
+pe_dd_multi <- compDistr(
+    object    = pe_multi,
+    covariate = "Field",
+    nuisance = ~ (1|Set),
+    adjust    = "stagewise"
+)
+```
+
+## Adjustment strategies for multi-group comparisons
+
+`gamdid` offers three adjustment strategies for multi-group analyses.
+
+`adjust = "stagewise"` (used above) applies a two-stage procedure via
+`r Biocpkg("stageR")`: in the first stage, the omnibus p-value is adjusted
+across features with Benjamini–Hochberg FDR control. Only features that pass 
+this screening stage proceed to the second stage, where the pairwise comparisons 
+are adjusted for multiple testing across the comparisons via the Holm method,
+within each significant feature.
+
+`adjust = "contrastwise"` applies Benjamini–Hochberg FDR correction
+independently to the omnibus column and to each pairwise comparison column.
+
+`adjust = "none"` skips correction entirely. For a three-group comparison
+this returns seven raw p-value columns per feature: one omnibus column each
+for `_GAM`, `_msqrob2`, and `_aggregated`, and one `_aggregated` column
+per pairwise comparison.
+
+```{r compDistr_multi_contrastwise, eval=FALSE}
+pe_dd_multi_cw <- compDistr(
+    object    = pe_multi,
+    covariate = "Field",
+    nuisance  = ~ (1|Set),
+    adjust    = "contrastwise"
+)
+
+## FDR-corrected omnibus and per-contrast columns are all available
+head(rowData(pe_dd_multi_cw))
+```
+
+## Results for the multi-group analysis
+
+```{r results_multi}
+head(rowData(pe_dd_multi))
+```
+
+## Ranking features with `topFeatures`
+
+For a multi-group result, `topFeatures` automatically sorts by the
+`"omnibus"` column:
+
+```{r topFeatures_multi}
+topFeatures(pe_dd_multi)
+```
+
+To sort by a specific pairwise comparison instead, supply `sort.by`
+explicitly:
+
+```{r topFeatures_multi_pairwise}
+topFeatures(pe_dd_multi, sort.by = "Field1_VS_Field2", n = 5)
+```
+
+When `adjust = "none"` is used, `topFeatures` requires an explicit `sort.by`
+since there are multiple raw p-value columns with no unambiguous default:
+
+```{r topFeatures_multi_none, eval=FALSE}
+topFeatures(pe_dd_multi_none, sort.by = "omnibus_aggregated")
+```
+
+## Visualization for multi-group comparisons
+
+`visFit` returns one plot per pairwise comparison as a named list:
+
+```{r vis_multi, fig.cap="Pairwise GAM density comparisons for the most significant feature in the multi-group analysis.", fig.height=5}
+top_multi <- rownames(topFeatures(pe_dd_multi, n = 10))
+visFit(pe_dd_multi, feature = top_multi[1], plot = "hist")
+```
+
+# Tips and best practices
+
+* **Minimum observations** The default `minObs = 50` requires at least 50
+  non-missing values per group before fitting a GAM. In experiments with few
+  cells per condition, lowering this threshold may increase the number of
+  tested features at the cost of less stable GAM fits.
+* **Number of bins** The default `bins = 25` works well for most datasets.
+  Increase `bins` if you suspect fine-grained distributional differences;
+  decrease it if many features have marginal counts per bin.
+* **Nuisance variables** Always account for technical variation (MS runs,
+  batches) via the `nuisance` argument.
+* **Visualization** Use `visFit(..., plot = "diff")` to understand *where*
+  in the distribution the groups differ, which aids biological interpretation.
+
+# Session information {.unnumbered}
+
+```{r session_info}
 sessionInfo()
 ```
+
+# References {.unnumbered}

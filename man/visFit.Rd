@@ -2,22 +2,23 @@
 % Please edit documentation in R/allGenerics.R, R/visFit-methods.R
 \name{visFit}
 \alias{visFit}
-\alias{visFit,SummarizedExperiment-method}
 \alias{visFit,QFeatures-method}
+\alias{visFit,SummarizedExperiment-method}
 \title{Visualize GAM fits for a single feature}
 \usage{
 visFit(object, ...)
 
-\S4method{visFit}{SummarizedExperiment}(object, feature, plot = "hist", shade = TRUE, alpha = NULL)
-
 \S4method{visFit}{QFeatures}(object, i, feature, plot = "hist", shade = TRUE, alpha = NULL)
+
+\S4method{visFit}{SummarizedExperiment}(object, feature, plot = "hist", shade = TRUE, alpha = NULL)
 }
 \arguments{
 \item{object}{A \code{SummarizedExperiment} (including
 \code{SingleCellExperiment}) or \code{QFeatures} instance that has been
 processed by \code{\link{compDistr}}.}
 
-\item{...}{Additional arguments passed to the methods.}
+\item{i}{A \code{character(1)} or \code{integer(1)} specifying which assay
+within the \code{QFeatures} object to visualize.}
 
 \item{feature}{A \code{character(1)} giving the row name of the feature to
 visualize, or an \code{integer(1)} giving its row index.}
@@ -34,28 +35,13 @@ the two groups differ significantly are highlighted with grey shading.}
 significance level used to construct the confidence band for the
 difference smoother. If \code{NULL} (default), the adjusted threshold
 \code{metadata(object)$adj_alpha} set by \code{\link{compDistr}} is used.}
-
-\item{i}{A \code{character(1)} or \code{integer(1)} specifying which assay
-within the \code{QFeatures} object to visualize.}
 }
 \value{
 A \code{ggplot} object, or a named list of \code{ggplot} objects
-(one per pairwise comparison) when more than two groups are present.
-The plot is also printed as a side effect.
-
-Invisibly returns a named list of \code{ggplot} objects, one per
-pairwise comparison. For a two-group comparison the list has a single
-element. The plots are also printed as a side effect.
+(one per pairwise  comparison) when more than two groups are present.
 }
 \description{
-Generic function for visualizing the GAM fit and differential distribution
-regions of a single feature after running \code{\link{compDistr}}.
-Dispatches to the appropriate method based on the class of \code{object}.
-See \code{\link{visFit,SummarizedExperiment-method}} and
-\code{\link{visFit,QFeatures-method}} for full parameter documentation and
-examples.
-
-\code{visFit} produces a publication-ready plot for a single feature after
+\code{visFit} produces a plot for a single feature after
 running \code{\link{compDistr}}. It overlays the empirical histograms and
 the fitted Poisson GAM density curves for each group, and optionally shades
 the regions of the distribution that differ significantly between groups.
@@ -65,7 +51,7 @@ Two plot types are available:
 
 \describe{
 \item{\code{"hist"}}{Displays the normalized histogram bars (empirical
-density) and the fitted GAM density curves side-by-side for the two
+density) and the fitted GAM density curves for the two
 groups. Grey shaded bands highlight bins where the pointwise confidence
 interval for the log-ratio of the two densities excludes zero, i.e.\
 regions where the groups differ significantly in density.}
@@ -78,15 +64,15 @@ The dashed red horizontal line marks zero (no difference). Shaded
 regions indicate where the confidence band excludes zero.}
 }
 
-Confidence bands are Bonferroni-corrected pointwise bands based on the
+Confidence bands are Sidak-corrected pointwise bands based on the
 effective degrees of freedom of the GAM fit (Nychka 1988), ensuring that
 the shaded regions have the correct simultaneous coverage. When
 \code{shade = TRUE} and \code{alpha = NULL}, the significance threshold
-is taken from \code{metadata(object)$adj_alpha}, the BH-adjusted threshold
-stored by \code{\link{compDistr}}.
+is taken from \code{metadata(object)$adj_alpha}, the BH-adjusted significance
+level stored by \code{\link{compDistr}}.
 
 When \code{nuisance} was specified in \code{\link{compDistr}}, the
-partial-residual assay (nuisance-corrected intensities) is used for
+partial-residual assay (nuisance-corrected) is used for
 visualization, so that group differences are shown on the nuisance-adjusted
 scale.
 
@@ -112,9 +98,6 @@ visFit(pe_dd, feature = 20, alpha = 0.01)
 
 }
 \seealso{
-\code{\link{compDistr}} for performing the distributional analysis
-that must precede visualization.
-
 \code{\link{compDistr}} which must be run before \code{visFit}.
 }
 \author{

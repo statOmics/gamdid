@@ -17,8 +17,6 @@ topFeatures(object, ...)
 \code{SingleCellExperiment}) or \code{QFeatures} instance returned by
 \code{\link{compDistr}}.}
 
-\item{...}{Additional arguments passed to the methods.}
-
 \item{sort.by}{A \code{character(1)} naming the \code{rowData} column to
 sort by. If \code{NULL} (default), the column is chosen automatically
 from the analysis metadata — see Details.}
@@ -30,21 +28,11 @@ return. Default is \code{10}.}
 within the \code{QFeatures} object to retrieve results from.}
 }
 \value{
-A \code{data.frame} with \code{n} rows sorted by the chosen
-p-value column, with features ordered from most to least significant.
-
 A \code{data.frame} with at most \code{n} rows, one per feature,
 sorted in ascending order of the chosen p-value column (most significant
 first). All columns from \code{rowData} are included.
 }
 \description{
-Generic function for extracting and ranking the most significant features
-from the output of \code{\link{compDistr}}. Dispatches to the appropriate
-method based on the class of \code{object}. See
-\code{\link{topFeatures,SummarizedExperiment-method}} and
-\code{\link{topFeatures,QFeatures-method}} for full parameter documentation
-and examples.
-
 \code{topFeatures} extracts the \code{n} most significant features from
 a \code{SummarizedExperiment} or \code{QFeatures} object returned by
 \code{\link{compDistr}}, returning them as a \code{data.frame} sorted by
@@ -91,10 +79,6 @@ topFeatures(pe_dd, sort.by = "SampleTypeMelanoma_VS_SampleTypeMonocyte")
 
 }
 \seealso{
-\code{\link{compDistr}} which must be run before
-\code{topFeatures}. \code{\link{visFit}} for visualizing individual
-features.
-
 \code{\link{compDistr}} for producing the input object.
 \code{\link{visFit}} for visualizing individual top features.
 }

@@ -1,7 +1,7 @@
 #' Interpretable visualization of the GAM fit for a single feature
 #'
 #' @description
-#' \code{visFit} produces a publication-ready plot for a single feature after
+#' \code{visFit} produces a plot for a single feature after
 #' running \code{\link{compDistr}}. It overlays the empirical histograms and
 #' the fitted Poisson GAM density curves for each group, and optionally shades
 #' the regions of the distribution that differ significantly between groups.
@@ -11,7 +11,7 @@
 #'
 #' \describe{
 #'   \item{\code{"hist"}}{Displays the normalized histogram bars (empirical
-#'     density) and the fitted GAM density curves side-by-side for the two
+#'     density) and the fitted GAM density curves for the two
 #'     groups. Grey shaded bands highlight bins where the pointwise confidence
 #'     interval for the log-ratio of the two densities excludes zero, i.e.\
 #'     regions where the groups differ significantly in density.}
@@ -24,15 +24,15 @@
 #'     regions indicate where the confidence band excludes zero.}
 #' }
 #'
-#' Confidence bands are Bonferroni-corrected pointwise bands based on the
+#' Confidence bands are Sidak-corrected pointwise bands based on the
 #' effective degrees of freedom of the GAM fit (Nychka 1988), ensuring that
 #' the shaded regions have the correct simultaneous coverage. When
 #' \code{shade = TRUE} and \code{alpha = NULL}, the significance threshold
-#' is taken from \code{metadata(object)$adj_alpha}, the BH-adjusted threshold
-#' stored by \code{\link{compDistr}}.
+#' is taken from \code{metadata(object)$adj_alpha}, the BH-adjusted significance
+#' level stored by \code{\link{compDistr}}.
 #'
 #' When \code{nuisance} was specified in \code{\link{compDistr}}, the
-#' partial-residual assay (nuisance-corrected intensities) is used for
+#' partial-residual assay (nuisance-corrected) is used for
 #' visualization, so that group differences are shown on the nuisance-adjusted
 #' scale.
 #'
@@ -48,6 +48,8 @@
 #' @param object A \code{SummarizedExperiment} (including
 #'   \code{SingleCellExperiment}) or \code{QFeatures} instance that has been
 #'   processed by \code{\link{compDistr}}.
+#' @param i A \code{character(1)} or \code{integer(1)} specifying which assay
+#'   within the \code{QFeatures} object to visualize.
 #'
 #' @param feature A \code{character(1)} giving the row name of the feature to
 #'   visualize, or an \code{integer(1)} giving its row index.
@@ -65,9 +67,8 @@
 #'   difference smoother. If \code{NULL} (default), the adjusted threshold
 #'   \code{metadata(object)$adj_alpha} set by \code{\link{compDistr}} is used.
 #'
-#' @return Invisibly returns a named list of \code{ggplot} objects, one per
-#'   pairwise comparison. For a two-group comparison the list has a single
-#'   element. The plots are also printed as a side effect.
+#' @return A \code{ggplot} object, or a named list of \code{ggplot} objects
+#' (one per pairwise  comparison) when more than two groups are present.
 #'
 #' @seealso \code{\link{compDistr}} which must be run before \code{visFit}.
 #'
@@ -96,25 +97,22 @@
 #' @importFrom methods is
 
 setMethod(
-    "visFit", "SummarizedExperiment",
-    function(object, feature, plot = "hist", shade = TRUE, alpha = NULL) {
-        visFitSCE(sce = object, feature = feature,
-            plot = plot, shade = shade, alpha = alpha)
-    }
+  "visFit", "QFeatures",
+  function(object, i, feature, plot = "hist", shade = TRUE, alpha = NULL) {
+    sce <- getWithColData(object, i)
+    visFitSCE(sce = sce, feature = feature,
+              plot = plot, shade = shade, alpha = alpha)
+  }
 )
 
-#' @param i A \code{character(1)} or \code{integer(1)} specifying which assay
-#'   within the \code{QFeatures} object to visualize.
-#'
 #' @export
 #'
 #' @rdname visFit
 
 setMethod(
-    "visFit", "QFeatures",
-    function(object, i, feature, plot = "hist", shade = TRUE, alpha = NULL) {
-        sce <- getWithColData(object, i)
-        visFitSCE(sce = sce, feature = feature,
-            plot = plot, shade = shade, alpha = alpha)
-    }
+  "visFit", "SummarizedExperiment",
+  function(object, feature, plot = "hist", shade = TRUE, alpha = NULL) {
+    visFitSCE(sce = object, feature = feature,
+              plot = plot, shade = shade, alpha = alpha)
+  }
 )

@@ -64,7 +64,7 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE, alpha = NULL) {
         diff <- as.vector(xdiff %*% fit_gam$coefficients)
         sediff <- sqrt(rowSums(xdiff %*% fit_gam$Vp * xdiff))
 
-        ## Bonferroni-corrected pointwise significance threshold
+        ## Sidak-corrected pointwise significance threshold
         if (is.null(alpha)) {
             alpha <- metadata(sce)$adj_alpha / 2
         } else {

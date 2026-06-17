@@ -2,14 +2,15 @@
 % Please edit documentation in R/allGenerics.R, R/compDistr-methods.R
 \name{compDistr}
 \alias{compDistr}
-\alias{compDistr,SummarizedExperiment-method}
 \alias{compDistr,QFeatures-method}
+\alias{compDistr,SummarizedExperiment-method}
 \title{Compare distributions across groups}
 \usage{
 compDistr(object, ...)
 
-\S4method{compDistr}{SummarizedExperiment}(
+\S4method{compDistr}{QFeatures}(
   object,
+  i,
   covariate,
   nuisance = NULL,
   minObs = 50,
@@ -19,9 +20,8 @@ compDistr(object, ...)
   ...
 )
 
-\S4method{compDistr}{QFeatures}(
+\S4method{compDistr}{SummarizedExperiment}(
   object,
-  i,
   covariate,
   nuisance = NULL,
   minObs = 50,
@@ -39,6 +39,9 @@ assay should contain log-transformed protein or peptide intensities.}
 \item{...}{Additional arguments passed to \code{\link[msqrob2]{msqrob}},
 e.g. \code{robust = TRUE} to use robust regression for the location
 analysis.}
+
+\item{i}{A \code{character(1)} or \code{integer(1)} specifying which assay
+within the \code{QFeatures} object to analyse.}
 
 \item{covariate}{A \code{character(1)} naming a column in the
 \code{colData} of \code{object}. The levels of this column define the
@@ -84,13 +87,12 @@ multiple testing correction.}
 Used by stagewise testing and to determine the adjusted significance
 threshold stored in \code{metadata(result)$adj_alpha}. Default is
 \code{0.05}.}
-
-\item{i}{A \code{character(1)} or \code{integer(1)} specifying which assay
-within the \code{QFeatures} object to analyse. The named assay should
-contain log-transformed intensities.}
 }
 \value{
-See individual methods for return value details.
+For the \code{QFeatures} method: the input \code{QFeatures} object
+with the assay specified by \code{i} replaced by an updated
+\code{SummarizedExperiment} containing the same additions as described
+below for the \code{SummarizedExperiment} method.
 
 For the \code{SummarizedExperiment} method: the input
 \code{SummarizedExperiment} augmented with:
@@ -108,20 +110,8 @@ intensities used for visualization.}
 \code{bins}, and \code{adj_alpha} are added, which are used by
 \code{\link{visFit}}.}
 }
-
-For the \code{QFeatures} method: the input \code{QFeatures} object
-with the assay specified by \code{i} replaced by an updated
-\code{SummarizedExperiment} containing the same additions as described
-above for the \code{SummarizedExperiment} method.
 }
 \description{
-Generic function for comparing distributions across levels of a covariate
-in single-cell proteomics data. Dispatches to the appropriate method based
-on the class of \code{object}. See
-\code{\link{compDistr,SummarizedExperiment-method}} and
-\code{\link{compDistr,QFeatures-method}} for full parameter documentation
-and examples.
-
 \code{compDistr} detects differentially distributed features between two or
 more experimental groups. The sample space of each feature is discretized
 into a histogram, and a Poisson generalized additive model (GAM) is fitted
@@ -142,10 +132,10 @@ smoothing splines is then fitted to the histogram counts. A Wald-type
 chi-squared test on the spline coefficients yields a p-value for any
 distributional difference (both in location and in shape).
 
-\item \strong{msqrob2 analysis.} A linear model is fitted to the
-log-transformed intensities using \code{\link[msqrob2]{msqrob}}, yielding
-a p-value for a mean difference between groups (one per pairwise
-contrast, plus an omnibus p-value when there are more than two groups).
+\item \strong{msqrob2 analysis.} A linear model is fitted using
+\code{\link[msqrob2]{msqrob}}, yielding a p-value for a mean difference
+between groups (one per pairwise contrast, plus an omnibus p-value when
+there are more than two groups).
 
 \item \strong{P-value aggregation.} The GAM and msqrob2 p-values are
 combined per contrast using the harmonic mean p-value
@@ -154,12 +144,6 @@ dependence and provides power gains when both tests detect signal.
 }
 
 Multiple testing correction is applied across features after aggregation.
-For omnibus testing across more than two groups, \emph{stagewise testing}
-via \pkg{stageR} applies a two-stage procedure: in the first stage, the
-omnibus p-value is adjusted across features with Benjamini–Hochberg FDR
-control. Only features that pass this screening stage proceed to the second
-stage, where the pairwise comparisons are adjusted for multiple testing
-across the comparisons via the Holm method, within each significant feature.
 }
 \examples{
 # Load example data: a SummarizedExperiment with protein-level intensities
@@ -177,9 +161,6 @@ MultiAssayExperiment::metadata(pe_dd)$adj_alpha
 
 }
 \seealso{
-\code{\link{visFit}} for visualizing the GAM fits after running
-\code{compDistr}.
-
 \code{\link{visFit}} for visualizing the GAM fits.
 \code{\link[msqrob2]{msqrob}} for the underlying location model.
 \code{\link[stageR]{stageWiseAdjustment}} for stagewise testing.

@@ -44,6 +44,9 @@
 #'   \code{SingleCellExperiment}) or \code{QFeatures} instance. The default
 #'   assay should contain log-transformed protein or peptide intensities.
 #'
+#' @param i A \code{character(1)} or \code{integer(1)} specifying which assay
+#'    within the \code{QFeatures} object to analyse.
+#'
 #' @param covariate A \code{character(1)} naming a column in the
 #'   \code{colData} of \code{object}. The levels of this column define the
 #'   groups to be compared. Must be a \code{character} or \code{factor}
@@ -93,22 +96,10 @@
 #'   e.g. \code{robust = TRUE} to use robust regression for the location
 #'   analysis.
 #'
-#' @return For the \code{SummarizedExperiment} method: the input
-#'   \code{SummarizedExperiment} augmented with:
-#'   \describe{
-#'     \item{\code{rowData}}{One or more columns of (adjusted) p-values. For
-#'       two groups, a single column named
-#'       \code{<level1>_VS_<level2>}. For more than two groups, a column
-#'       \code{omnibus} plus one column per pairwise comparison. When
-#'       \code{adjust = "none"}, three columns per contrast are added:
-#'       \code{_GAM}, \code{_msqrob2}, and \code{_aggregated}.}
-#'     \item{\code{assays}}{If \code{nuisance} is provided, a
-#'       \code{partialResiduals} assay is added containing nuisance-corrected
-#'       intensities used for visualization.}
-#'     \item{\code{metadata}}{Entries \code{covariate}, \code{comparisons},
-#'       \code{bins}, and \code{adj_alpha} are added, which are used by
-#'       \code{\link{visFit}}.}
-#'   }
+#' @return For the \code{QFeatures} method: the input \code{QFeatures} object
+#'   with the assay specified by \code{i} replaced by an updated
+#'   \code{SummarizedExperiment} containing the same additions as described
+#'   below for the \code{SummarizedExperiment} method.
 #'
 #' @seealso
 #' \code{\link{visFit}} for visualizing the GAM fits.
@@ -137,35 +128,45 @@
 #' @importFrom methods is
 
 setMethod(
-    "compDistr", "SummarizedExperiment",
-    function(object, covariate, nuisance = NULL, minObs = 50,
-             bins = 25, adjust = "stagewise", alpha = 0.05, ...) {
-        compDistrSCE(sce = object, covariate = covariate,
-            nuisance = nuisance, minObs = minObs, bins = bins,
-            adjust = adjust, alpha = alpha, ...)
-    }
+  "compDistr", "QFeatures",
+  function(object, i, covariate, nuisance = NULL, minObs = 50,
+           bins = 25, adjust = "stagewise", alpha = 0.05, ...) {
+    sce <- getWithColData(object, i)
+    sce_out <- compDistrSCE(sce = sce, covariate = covariate,
+                            nuisance = nuisance, minObs = minObs, bins = bins,
+                            adjust = adjust, alpha = alpha, ...)
+    object[[i]] <- sce_out
+    object
+  }
 )
 
-#' @param i A \code{character(1)} or \code{integer(1)} specifying which assay
-#'   within the \code{QFeatures} object to analyse.
-#'
-#' @return For the \code{QFeatures} method: the input \code{QFeatures} object
-#'   with the assay specified by \code{i} replaced by an updated
-#'   \code{SummarizedExperiment} containing the same additions as described
-#'   above for the \code{SummarizedExperiment} method.
+
+#' @return For the \code{SummarizedExperiment} method: the input
+#'   \code{SummarizedExperiment} augmented with:
+#'   \describe{
+#'     \item{\code{rowData}}{One or more columns of (adjusted) p-values. For
+#'       two groups, a single column named
+#'       \code{<level1>_VS_<level2>}. For more than two groups, a column
+#'       \code{omnibus} plus one column per pairwise comparison. When
+#'       \code{adjust = "none"}, three columns per contrast are added:
+#'       \code{_GAM}, \code{_msqrob2}, and \code{_aggregated}.}
+#'     \item{\code{assays}}{If \code{nuisance} is provided, a
+#'       \code{partialResiduals} assay is added containing nuisance-corrected
+#'       intensities used for visualization.}
+#'     \item{\code{metadata}}{Entries \code{covariate}, \code{comparisons},
+#'       \code{bins}, and \code{adj_alpha} are added, which are used by
+#'       \code{\link{visFit}}.}
+#'   }
 #'
 #' @export
 #' @rdname compDistr
 
 setMethod(
-    "compDistr", "QFeatures",
-    function(object, i, covariate, nuisance = NULL, minObs = 50,
-             bins = 25, adjust = "stagewise", alpha = 0.05, ...) {
-        sce <- getWithColData(object, i)
-        sce_out <- compDistrSCE(sce = sce, covariate = covariate,
-            nuisance = nuisance, minObs = minObs, bins = bins,
-            adjust = adjust, alpha = alpha, ...)
-        object[[i]] <- sce_out
-        object
-    }
+  "compDistr", "SummarizedExperiment",
+  function(object, covariate, nuisance = NULL, minObs = 50,
+           bins = 25, adjust = "stagewise", alpha = 0.05, ...) {
+    compDistrSCE(sce = object, covariate = covariate,
+                 nuisance = nuisance, minObs = minObs, bins = bins,
+                 adjust = adjust, alpha = alpha, ...)
+  }
 )

@@ -67,6 +67,8 @@
 #'   difference smoother. If \code{NULL} (default), the adjusted threshold
 #'   \code{metadata(object)$adj_alpha} set by \code{\link{compDistr}} is used.
 #'
+#' @param ... Additional arguments (currently unused).
+#'
 #' @return A \code{ggplot} object, or a named list of \code{ggplot} objects
 #' (one per pairwise  comparison) when more than two groups are present.
 #'

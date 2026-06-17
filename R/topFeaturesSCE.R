@@ -1,5 +1,6 @@
 #' @importFrom SummarizedExperiment rowData
 #' @importFrom MultiAssayExperiment metadata
+#' @importFrom utils head
 
 topFeaturesSCE <- function(sce, sort.by = NULL, n = 10) {
     rd <- as.data.frame(rowData(sce))

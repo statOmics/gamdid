@@ -48,6 +48,8 @@
 #' @param n A \code{integer(1)} specifying the maximum number of features to
 #'   return. Default is \code{10}.
 #'
+#' @param ... Additional arguments (currently unused).
+#'
 #' @return A \code{data.frame} with at most \code{n} rows, one per feature,
 #'   sorted in ascending order of the chosen p-value column (most significant
 #'   first). All columns from \code{rowData} are included.

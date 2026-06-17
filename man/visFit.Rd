@@ -17,6 +17,8 @@ visFit(object, ...)
 \code{SingleCellExperiment}) or \code{QFeatures} instance that has been
 processed by \code{\link{compDistr}}.}
 
+\item{...}{Additional arguments (currently unused).}
+
 \item{i}{A \code{character(1)} or \code{integer(1)} specifying which assay
 within the \code{QFeatures} object to visualize.}
 

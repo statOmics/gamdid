@@ -17,6 +17,8 @@ topFeatures(object, ...)
 \code{SingleCellExperiment}) or \code{QFeatures} instance returned by
 \code{\link{compDistr}}.}
 
+\item{...}{Additional arguments (currently unused).}
+
 \item{sort.by}{A \code{character(1)} naming the \code{rowData} column to
 sort by. If \code{NULL} (default), the column is chosen automatically
 from the analysis metadata — see Details.}

@@ -1,3 +1,5 @@
 ^gamdid\.Rproj$
 ^\.Rproj\.user$
 ^\.github$
+^LICENSE\.md$
+^CITATION\.cff$

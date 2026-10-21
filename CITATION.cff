@@ -1,0 +1,60 @@
+cff-version: 1.2.0
+message: "If you use gamdid in your research, please cite it using the preferred citation below."
+type: software
+title: "gamdid: Inference and Visualization for Differential Distribution Analysis in Single Cell Proteomics"
+abstract: >-
+  gamdid provides inference and interpretable visualizations for comparing
+  distributions in single cell proteomics data. It recasts density estimation
+  as a Poisson regression and uses generalized additive models (GAMs) to
+  flexibly model distributions and test for any distributional difference
+  between groups. The GAM p-value is aggregated with the msqrob2 p-value via
+  the harmonic mean p-value to improve power for mean shifts. gamdid also
+  detects differential regions of the distribution and supports omnibus
+  testing across more than two groups, with post-hoc pairwise comparisons via
+  stagewise testing.
+authors:
+  - given-names: Lucas
+    family-names: Beerland
+    email: lucas.beerland@ugent.be
+    affiliation: Ghent University
+    orcid: "https://orcid.org/0009-0004-2091-6363"
+  - given-names: Stijn
+    family-names: Vandenbulcke
+    affiliation: Ghent University
+  - given-names: Christophe
+    family-names: Vanderaa
+    affiliation: Ghent University
+  - given-names: Lennart
+    family-names: Martens
+    affiliation: Ghent University
+  - given-names: Lieven
+    family-names: Clement
+    affiliation: Ghent University
+version: 0.99.0
+license: Artistic-2.0
+repository-code: "https://github.com/statOmics/gamdid"
+url: "https://github.com/statOmics/gamdid"
+keywords:
+  - R
+  - Bioconductor
+  - single-cell proteomics
+  - mass spectrometry
+  - differential distribution
+  - generalized additive models
+preferred-citation:
+  type: article
+  title: "gamdid: Inference and visualization for differential distribution analysis in single-cell proteomics"
+  authors:
+    - given-names: Lucas
+      family-names: Beerland
+    - given-names: Stijn
+      family-names: Vandenbulcke
+    - given-names: Christophe
+      family-names: Vanderaa
+    - given-names: Lennart
+      family-names: Martens
+    - given-names: Lieven
+      family-names: Clement
+  journal: bioRxiv
+  year: 2026
+  url: "https://github.com/statOmics/gamdid"

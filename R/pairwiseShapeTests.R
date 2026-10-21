@@ -6,7 +6,8 @@ pairwiseShapeTests <- function(fit, L, comps, nbasis, tol = tol) {
     for (q in seq_len(n_comps)) {
         idx <- seq_len(nbasis) + (q - 1) * nbasis
         Lq <- L[, idx, drop = FALSE]
-        lev <- comps[, q]
+        ## comps holds 0-based level indices, edf is ordered by level
+        lev <- comps[, q] + 1
         df_q <- max(edf[lev])
         res <- waldTest(fit, Lq, df = df_q, tol = tol)
         pvals[q] <- res["pval"]

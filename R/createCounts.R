@@ -13,7 +13,9 @@ createCounts <- function(x, colDat, covariate, minObs = 50, bins = 25) {
 
     ## Return NA if any group has fewer than minObs non-missing observations
     obsPerLvl <- tapply(!is.na(x), colDat[[covariate]], sum)
-    if (!all(obsPerLvl > minObs)) return(NA)
+    if (!all(obsPerLvl >= minObs)) {
+        return(NA)
+    }
 
     ## Define shared histogram grid across all groups
     min_x <- floor(min(x, na.rm = TRUE) * 10) / 10

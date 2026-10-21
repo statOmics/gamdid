@@ -2,8 +2,8 @@
 #'
 #' @export
 setGeneric(
-  "compDistr",
-  function(object, ...) standardGeneric("compDistr")
+    "compDistr",
+    function(object, ...) standardGeneric("compDistr")
 )
 
 #' @title Visualize GAM fits for a single feature

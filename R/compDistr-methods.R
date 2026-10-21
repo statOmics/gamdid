@@ -27,16 +27,43 @@
 #'   there are more than two groups).
 #'
 #'   \item \strong{P-value aggregation.} The GAM and msqrob2 p-values are
-#'     combined per contrast using the harmonic mean p-value
-#'     (\code{\link[harmonicmeanp]{hmp.stat}}), which is valid under arbitrary
-#'     dependence and provides power gains when both tests detect signal.
+#'     combined per contrast by their harmonic mean
+#'     (\code{\link[harmonicmeanp]{hmp.stat}}; Wilson, 2019). The harmonic
+#'     mean lies between the smaller p-value and twice the smaller p-value,
+#'     so the aggregated p-value is small when either test detects a
+#'     difference. This increases the power for mean shifts compared to the
+#'     GAM test alone.
 #' }
 #'
+#' The harmonic mean of the two p-values is used directly as the aggregated
+#' p-value. It is not an exact p-value: for small p-values it is
+#' approximately calibrated, but it is slightly anti-conservative, i.e. it
+#' falls below a significance level \eqn{\alpha} somewhat more often than
+#' \eqn{\alpha} when neither test has a true effect (Wilson, 2019). For two
+#' independent tests, the probability of an aggregated p-value below 0.05
+#' is about 0.055. The GAM and msqrob2 p-values are computed on the same
+#' data and are both sensitive to mean shifts, so they are positively
+#' dependent, which brings the harmonic mean closer to an exact p-value.
+#'
+#' A feature is only tested when both the GAM and the msqrob2 p-value are
+#' available. When either is \code{NA}, the aggregated p-value is \code{NA}.
+#' This happens in particular when a feature has fewer than \code{minObs}
+#' observations in a group: no GAM is fitted, and the msqrob2 p-value is not
+#' used on its own. This is intended: a differential distribution analysis
+#' requires enough observations per group to estimate the distributions, and
+#' falling back to the msqrob2 p-value would mix two different tests
+#' (distribution versus mean) in one result. The msqrob2 p-values of these
+#' features remain available with \code{adjust = "none"} (columns ending in
+#' \code{_msqrob2}).
+#'
 #' Multiple testing correction is applied across features after aggregation.
+#' Features with an \code{NA} aggregated p-value keep \code{NA} and are not
+#' counted in the correction.
 #'
 #' @include compDistrSCE.R
 #'
-#' @aliases compDistr compDistr,SummarizedExperiment-method compDistr,QFeatures-method
+#' @aliases compDistr compDistr,SummarizedExperiment-method
+#'   compDistr,QFeatures-method
 #'
 #' @author Lucas Beerland
 #'
@@ -54,19 +81,23 @@
 #'
 #' @param nuisance An optional one-sided formula (e.g. \code{~ (1|run)})
 #'   specifying nuisance covariates to account for in the analyses.
-#'   Fixed effects and random effects (specified with
-#'   \code{lme4} syntax) are supported. The \code{covariate} of interest must
-#'   not appear in this formula.
+#'   Fixed effects and random intercepts (specified with \code{lme4}
+#'   syntax, e.g. \code{(1 | run)}, also several or nested ones) are
+#'   supported. Random slopes (e.g. \code{(x | run)}) and uncorrelated random
+#'   effects (\code{||}) are not supported. The \code{covariate} of interest
+#'   must not appear in this formula.
 #'
 #' @param minObs A \code{numeric(1)} giving the minimum number of non-missing
 #'   observations required \emph{per group} to attempt GAM fitting for a
-#'   feature. Features with fewer observations in any group are assigned
-#'   \code{NA} p-values. Default is \code{50}.
+#'   feature. Features with fewer observations in any group get an \code{NA}
+#'   GAM p-value and therefore an \code{NA} aggregated p-value, even though
+#'   their msqrob2 p-value is available (see Details). Default is \code{50}.
 #'
 #' @param bins A \code{numeric(1)} giving the number of histogram bins used to
 #'   discretize the sample space for the GAM shape test. Finer grids capture
 #'   more detailed shape differences but require more observations per bin.
-#'   Default is \code{25}.
+#'   Must be a whole number of at least 10, because each group is modelled
+#'   with a smoothing spline of 10 basis functions. Default is \code{25}.
 #'
 #' @param adjust A \code{character(1)} specifying the multiple testing
 #'   correction strategy:
@@ -101,6 +132,11 @@
 #'   \code{SummarizedExperiment} containing the same additions as described
 #'   below for the \code{SummarizedExperiment} method.
 #'
+#' @references
+#' Wilson DJ (2019). The harmonic mean p-value for combining dependent tests.
+#' \emph{Proceedings of the National Academy of Sciences} \strong{116},
+#' 1195--1200. \doi{10.1073/pnas.1814092116}
+#'
 #' @seealso
 #' \code{\link{visFit}} for visualizing the GAM fits.
 #' \code{\link[msqrob2]{msqrob}} for the underlying location model.
@@ -112,7 +148,7 @@
 #' data(pe)
 #'
 #' # Two-group comparison, correcting for MS run (batch) effect
-#' pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~ Set)
+#' pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~Set)
 #'
 #' # View the adjusted p-values for the pairwise comparison
 #' SummarizedExperiment::rowData(pe_dd)$SampleTypeMelanoma_VS_SampleTypeMonocyte
@@ -124,20 +160,24 @@
 #'
 #' @rdname compDistr
 #'
-#' @importFrom MultiAssayExperiment getWithColData metadata metadata<-
+#' @importFrom MultiAssayExperiment getWithColData
+#' @importFrom S4Vectors metadata metadata<-
+#' @importClassesFrom QFeatures QFeatures
 #' @importFrom methods is
 
 setMethod(
-  "compDistr", "QFeatures",
-  function(object, i, covariate, nuisance = NULL, minObs = 50,
-           bins = 25, adjust = "stagewise", alpha = 0.05, ...) {
-    sce <- getWithColData(object, i)
-    sce_out <- compDistrSCE(sce = sce, covariate = covariate,
-                            nuisance = nuisance, minObs = minObs, bins = bins,
-                            adjust = adjust, alpha = alpha, ...)
-    object[[i]] <- sce_out
-    object
-  }
+    "compDistr", "QFeatures",
+    function(object, i, covariate, nuisance = NULL, minObs = 50,
+        bins = 25, adjust = "stagewise", alpha = 0.05, ...) {
+        sce <- getWithColData(object, i)
+        sce_out <- compDistrSCE(
+            sce = sce, covariate = covariate,
+            nuisance = nuisance, minObs = minObs, bins = bins,
+            adjust = adjust, alpha = alpha, ...
+        )
+        object[[i]] <- sce_out
+        object
+    }
 )
 
 
@@ -154,7 +194,9 @@ setMethod(
 #'       \code{partialResiduals} assay is added containing nuisance-corrected
 #'       intensities used for visualization.}
 #'     \item{\code{metadata}}{Entries \code{covariate}, \code{comparisons},
-#'       \code{bins}, and \code{adj_alpha} are added, which are used by
+#'       \code{bins}, \code{adj_alpha} (\code{NA} when no feature is
+#'       significant), \code{alpha} and \code{n_tests} (the number of
+#'       features with a p-value) are added, which are used by
 #'       \code{\link{visFit}}.}
 #'   }
 #'
@@ -162,11 +204,13 @@ setMethod(
 #' @rdname compDistr
 
 setMethod(
-  "compDistr", "SummarizedExperiment",
-  function(object, covariate, nuisance = NULL, minObs = 50,
-           bins = 25, adjust = "stagewise", alpha = 0.05, ...) {
-    compDistrSCE(sce = object, covariate = covariate,
-                 nuisance = nuisance, minObs = minObs, bins = bins,
-                 adjust = adjust, alpha = alpha, ...)
-  }
+    "compDistr", "SummarizedExperiment",
+    function(object, covariate, nuisance = NULL, minObs = 50,
+        bins = 25, adjust = "stagewise", alpha = 0.05, ...) {
+        compDistrSCE(
+            sce = object, covariate = covariate,
+            nuisance = nuisance, minObs = minObs, bins = bins,
+            adjust = adjust, alpha = alpha, ...
+        )
+    }
 )

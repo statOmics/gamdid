@@ -49,8 +49,9 @@ The column used for sorting is determined as follows:
 \code{adjust = "stagewise"} or \code{adjust = "contrastwise"}:
 \itemize{
 \item For a \strong{two-group} comparison, the single pairwise
-comparison column (e.g. \code{"SampleTypeMelanoma_VS_SampleTypeMonocyte"})
-is used automatically.
+comparison column
+(e.g. \code{"SampleTypeMelanoma_VS_SampleTypeMonocyte"}) is used
+automatically.
 \item For a \strong{multi-group} comparison, the \code{"omnibus"}
 column is used automatically.
 }
@@ -68,7 +69,7 @@ are placed at the end of the table.
 \examples{
 # Load example data and run distributional comparison
 data(pe)
-pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~ Set)
+pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~Set)
 
 # Default: automatically sorts by the single pairwise comparison column
 topFeatures(pe_dd)

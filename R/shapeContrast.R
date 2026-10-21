@@ -14,7 +14,7 @@ shapeContrast <- function(n_levels, nbasis, coef_names) {
         a <- comps[, i]
         for (j in seq_len(nbasis)) {
             L[j + n_levels + nbasis * a[1], j + (i - 1) * nbasis] <- -1
-            L[j + n_levels + nbasis * a[2], j + (i - 1) * nbasis] <-  1
+            L[j + n_levels + nbasis * a[2], j + (i - 1) * nbasis] <- 1
         }
     }
 

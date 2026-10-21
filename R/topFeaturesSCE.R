@@ -1,12 +1,13 @@
 #' @importFrom SummarizedExperiment rowData
-#' @importFrom MultiAssayExperiment metadata
+#' @importFrom S4Vectors metadata
 #' @importFrom utils head
 
 topFeaturesSCE <- function(sce, sort.by = NULL, n = 10) {
     rd <- as.data.frame(rowData(sce))
     comparisons <- metadata(sce)$comparisons
 
-    ## Detect unadjusted output by presence of _GAM/_msqrob2/_aggregated suffixes
+    ## Detect unadjusted output by presence of _GAM/_msqrob2/_aggregated
+    ## suffixes
     is_unadjusted <- any(grepl("_GAM$|_msqrob2$|_aggregated$", colnames(rd)))
 
     if (is.null(sort.by)) {
@@ -23,7 +24,9 @@ topFeaturesSCE <- function(sce, sort.by = NULL, n = 10) {
         stop(
             "'sort.by' column '", sort.by, "' not found in rowData. ",
             "Available p-value columns: ",
-            paste(c(comparisons, if (!is.null(comparisons)) "omnibus"), collapse = ", ")
+            paste(c(comparisons, if (!is.null(comparisons)) "omnibus"),
+                collapse = ", "
+            )
         )
     }
 

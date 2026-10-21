@@ -1,17 +1,4 @@
-# setting R_TESTS to empty string because of
-# https://github.com/hadley/testthat/issues/144
-# revert this when that issue in R is fixed.
-Sys.setenv("R_TESTS" = "")
-
 library(testthat)
 library(gamdid)
-library(dplyr)
-library(ggplot2)
-library(SummarizedExperiment)
-library(msqrob2)
-library(mgcv)
-library(lme4)
-library(harmonicmeanp)
-library(stageR)
 
 test_check("gamdid")

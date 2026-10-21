@@ -29,7 +29,10 @@
 #' the shaded regions have the correct simultaneous coverage. When
 #' \code{shade = TRUE} and \code{alpha = NULL}, the significance threshold
 #' is taken from \code{metadata(object)$adj_alpha}, the BH-adjusted significance
-#' level stored by \code{\link{compDistr}}.
+#' level stored by \code{\link{compDistr}}. When no feature is significant,
+#' \code{adj_alpha} is \code{NA} and the most stringent BH level,
+#' \code{alpha / n_tests} (the \code{alpha} of \code{\link{compDistr}} divided
+#' by the number of tested features), is used instead, with a message.
 #'
 #' When \code{nuisance} was specified in \code{\link{compDistr}}, the
 #' partial-residual assay (nuisance-corrected) is used for
@@ -65,7 +68,8 @@
 #' @param alpha A \code{numeric(1)} in \code{(0, 1)} specifying the
 #'   significance level used to construct the confidence band for the
 #'   difference smoother. If \code{NULL} (default), the adjusted threshold
-#'   \code{metadata(object)$adj_alpha} set by \code{\link{compDistr}} is used.
+#'   \code{metadata(object)$adj_alpha} set by \code{\link{compDistr}} is used,
+#'   or \code{alpha / n_tests} when no feature is significant (see Details).
 #'
 #' @param ... Additional arguments (currently unused).
 #'
@@ -80,7 +84,7 @@
 #' data(pe)
 #'
 #' # Run distributional comparison
-#' pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~ Set)
+#' pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~Set)
 #'
 #' # Histogram overlay with differential region shading (default)
 #' visFit(pe_dd, feature = 20)
@@ -95,16 +99,20 @@
 #'
 #' @rdname visFit
 #'
-#' @importFrom MultiAssayExperiment getWithColData metadata metadata<-
+#' @importFrom MultiAssayExperiment getWithColData
+#' @importFrom S4Vectors metadata metadata<-
+#' @importClassesFrom QFeatures QFeatures
 #' @importFrom methods is
 
 setMethod(
-  "visFit", "QFeatures",
-  function(object, i, feature, plot = "hist", shade = TRUE, alpha = NULL) {
-    sce <- getWithColData(object, i)
-    visFitSCE(sce = sce, feature = feature,
-              plot = plot, shade = shade, alpha = alpha)
-  }
+    "visFit", "QFeatures",
+    function(object, i, feature, plot = "hist", shade = TRUE, alpha = NULL) {
+        sce <- getWithColData(object, i)
+        visFitSCE(
+            sce = sce, feature = feature,
+            plot = plot, shade = shade, alpha = alpha
+        )
+    }
 )
 
 #' @export
@@ -112,9 +120,11 @@ setMethod(
 #' @rdname visFit
 
 setMethod(
-  "visFit", "SummarizedExperiment",
-  function(object, feature, plot = "hist", shade = TRUE, alpha = NULL) {
-    visFitSCE(sce = object, feature = feature,
-              plot = plot, shade = shade, alpha = alpha)
-  }
+    "visFit", "SummarizedExperiment",
+    function(object, feature, plot = "hist", shade = TRUE, alpha = NULL) {
+        visFitSCE(
+            sce = object, feature = feature,
+            plot = plot, shade = shade, alpha = alpha
+        )
+    }
 )

@@ -36,7 +36,8 @@ the two groups differ significantly are highlighted with grey shading.}
 \item{alpha}{A \code{numeric(1)} in \code{(0, 1)} specifying the
 significance level used to construct the confidence band for the
 difference smoother. If \code{NULL} (default), the adjusted threshold
-\code{metadata(object)$adj_alpha} set by \code{\link{compDistr}} is used.}
+\code{metadata(object)$adj_alpha} set by \code{\link{compDistr}} is used,
+or \code{alpha / n_tests} when no feature is significant (see Details).}
 }
 \value{
 A \code{ggplot} object, or a named list of \code{ggplot} objects
@@ -71,7 +72,10 @@ effective degrees of freedom of the GAM fit (Nychka 1988), ensuring that
 the shaded regions have the correct simultaneous coverage. When
 \code{shade = TRUE} and \code{alpha = NULL}, the significance threshold
 is taken from \code{metadata(object)$adj_alpha}, the BH-adjusted significance
-level stored by \code{\link{compDistr}}.
+level stored by \code{\link{compDistr}}. When no feature is significant,
+\code{adj_alpha} is \code{NA} and the most stringent BH level,
+\code{alpha / n_tests} (the \code{alpha} of \code{\link{compDistr}} divided
+by the number of tested features), is used instead, with a message.
 
 When \code{nuisance} was specified in \code{\link{compDistr}}, the
 partial-residual assay (nuisance-corrected) is used for
@@ -87,7 +91,7 @@ returned as a named list.
 data(pe)
 
 # Run distributional comparison
-pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~ Set)
+pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~Set)
 
 # Histogram overlay with differential region shading (default)
 visFit(pe_dd, feature = 20)

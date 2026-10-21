@@ -15,8 +15,9 @@
 #'     \code{adjust = "stagewise"} or \code{adjust = "contrastwise"}:
 #'     \itemize{
 #'       \item For a \strong{two-group} comparison, the single pairwise
-#'         comparison column (e.g. \code{"SampleTypeMelanoma_VS_SampleTypeMonocyte"})
-#'         is used automatically.
+#'         comparison column
+#'         (e.g. \code{"SampleTypeMelanoma_VS_SampleTypeMonocyte"}) is used
+#'         automatically.
 #'       \item For a \strong{multi-group} comparison, the \code{"omnibus"}
 #'         column is used automatically.
 #'     }
@@ -33,7 +34,8 @@
 #'
 #' @include topFeaturesSCE.R
 #'
-#' @aliases topFeatures topFeatures,SummarizedExperiment-method topFeatures,QFeatures-method
+#' @aliases topFeatures topFeatures,SummarizedExperiment-method
+#'   topFeatures,QFeatures-method
 #'
 #' @author Lucas Beerland
 #'
@@ -60,7 +62,7 @@
 #' @examples
 #' # Load example data and run distributional comparison
 #' data(pe)
-#' pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~ Set)
+#' pe_dd <- compDistr(pe, covariate = "SampleType", nuisance = ~Set)
 #'
 #' # Default: automatically sorts by the single pairwise comparison column
 #' topFeatures(pe_dd)
@@ -75,7 +77,9 @@
 #'
 #' @rdname topFeatures
 #'
-#' @importFrom MultiAssayExperiment getWithColData metadata
+#' @importFrom MultiAssayExperiment getWithColData
+#' @importFrom S4Vectors metadata
+#' @importClassesFrom QFeatures QFeatures
 #' @importFrom methods is
 
 setMethod(

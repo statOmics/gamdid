@@ -23,13 +23,13 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  collapse  = TRUE,
-  comment   = "#>",
-  message   = FALSE,
-  warning   = FALSE,
-  fig.align = "center",
-  fig.width = 6,
-  fig.height = 4
+    collapse = TRUE,
+    comment = "#>",
+    message = FALSE,
+    warning = FALSE,
+    fig.align = "center",
+    fig.width = 6,
+    fig.height = 4
 )
 ```
 
@@ -44,25 +44,27 @@ distributional difference (shape and mean differences).
 ## Key features
 
 * **GAM workflow** The sample space of each feature is discretized
-  into a histogram, and a Poisson generalized additive model (GAM) is fitted
-  per group using `r CRANpkg("mgcv")`. A Wald-type chi-squared test on the
-  group-specific smoothing splines yields a p-value for inferring
-  any type of distributional difference both in location and in shape, 
-  referred to as the GAM p-value.
-* **P-value aggregation** To increase the power to detect distributional 
-  changes that are strongly driven by differences in the mean, the p-value
-  obtained from the GAM is combined with a p-value derived from the 
-  `r Biocpkg("msqrob2")` framework via the harmonic mean p-value [@Wilson2019]
-* **Nuisance correction** The nuisance effect (e.g. batch or MS run) is removed 
-  from the data before GAM fitting, so the shape test focuses on the covariate 
-  of interest.
+    into a histogram, and a Poisson generalized additive model (GAM) is
+    fitted per group using `r CRANpkg("mgcv")`. A Wald-type chi-squared test
+    on the group-specific smoothing splines yields a p-value for inferring
+    any type of distributional difference both in location and in shape,
+    referred to as the GAM p-value.
+* **P-value aggregation** To increase the power to detect distributional
+    changes that are strongly driven by differences in the mean, the p-value
+    obtained from the GAM is combined with a p-value derived from the
+    `r Biocpkg("msqrob2")` framework via the harmonic mean p-value
+    [@Wilson2019]
+* **Nuisance correction** The nuisance effect (e.g. batch or MS run) is
+    removed from the data before GAM fitting, so the shape test focuses on
+    the covariate of interest.
 * **Multi-group testing** For covariates with more than two groups,
-  `gamdid` performs an omnibus test followed by post-hoc pairwise comparisons,
-  with multiple testing correction via stagewise testing
-  (`r Biocpkg("stageR")`) or Benjamini–Hochberg FDR [@BH_procedure].
+    `gamdid` performs an omnibus test followed by post-hoc pairwise
+    comparisons, with multiple testing correction via stagewise testing
+    (`r Biocpkg("stageR")`) or Benjamini–Hochberg FDR [@BH_procedure].
 * **Interpretable visualization** `visFit` overlays the fitted GAM densities
-  on the empirical histograms and marks the differential regions of the
-  distribution with grey shading, directly linking the visualization to the inference.
+    on the empirical histograms and marks the differential regions of the
+    distribution with grey shading, directly linking the visualization to
+    the inference.
 
 ## Workflow overview
 
@@ -82,10 +84,11 @@ supported.
 To install the development version from GitHub:
 
 ```{r install_gh, eval=FALSE}
-if (!requireNamespace("remotes", quietly = TRUE))
+if (!requireNamespace("remotes", quietly = TRUE)) {
     install.packages("remotes")
+}
 
-remotes::install_github("lbeerland/gamdid")
+remotes::install_github("statOmics/gamdid")
 ```
 
 # Load packages
@@ -93,9 +96,6 @@ remotes::install_github("lbeerland/gamdid")
 ```{r load_packages}
 library(gamdid)
 library(SummarizedExperiment)
-library(scpdata)
-library(dplyr)
-library(ggplot2)
 ```
 
 # Example data
@@ -132,7 +132,7 @@ effect:
 pe_dd <- compDistr(
     object    = pe,
     covariate = "SampleType",
-    nuisance  = ~ (1|Set)
+    nuisance  = ~ (1 | Set)
 )
 ```
 
@@ -173,7 +173,7 @@ correction.
 pe_dd_none <- compDistr(
     object    = pe,
     covariate = "SampleType",
-    nuisance  = ~ (1|Set),
+    nuisance  = ~ (1 | Set),
     adjust    = "none"
 )
 head(rowData(pe_dd_none))
@@ -193,16 +193,22 @@ automatically sorts by the single pairwise comparison column:
 topFeatures(pe_dd)
 ```
 
-When `adjust = "none"` is used, `topFeatures` requires you to specify `sort.by` explicitly:
+When `adjust = "none"` is used, `topFeatures` requires you to specify
+`sort.by` explicitly:
 
 ```{r topFeatures_none}
-topFeatures(pe_dd_none, sort.by = "SampleTypeMelanoma_VS_SampleTypeMonocyte_aggregated")
+topFeatures(pe_dd_none,
+    sort.by = "SampleTypeMelanoma_VS_SampleTypeMonocyte_aggregated"
+)
 ```
 
 ## Visualizing individual features
 
 
-```{r vis_hist, fig.cap="Histogram overlay with differential region shading for the most significant feature."}
+```{r vis_hist}
+#| fig.cap: >
+#|   Histogram overlay with differential region shading for the most
+#|   significant feature.
 top_features <- rownames(topFeatures(pe_dd, n = 10))
 visFit(pe_dd, feature = top_features[1], plot = "hist")
 ```
@@ -226,7 +232,10 @@ log-ratio of the two fitted densities (the *difference smoother*) with
 confidence bands. Regions where the confidence band excludes zero are
 shaded:
 
-```{r vis_diff, fig.cap="Two-panel plot showing the empirical densities (top) and the difference smoother (bottom)."}
+```{r vis_diff}
+#| fig.cap: >
+#|   Two-panel plot showing the empirical densities (top) and the difference
+#|   smoother (bottom).
 visFit(pe_dd, feature = top_features[1], plot = "diff")
 ```
 
@@ -242,7 +251,7 @@ When the covariate of interest has more than two levels, `compDistr`
 automatically performs an omnibus test (testing whether *any* pair of groups
 differs) followed by all pairwise post-hoc comparisons.
 
-Here we use the `Field` variable from the `pe` dataset (three levels) to
+Here we use the `Field` variable from the `pe` dataset (four levels) to
 illustrate the multi-group workflow:
 
 ```{r compDistr_multi}
@@ -250,10 +259,10 @@ pe_multi <- pe[, !is.na(pe$Field)]
 pe_multi$Field <- as.factor(pe_multi$Field)
 
 pe_dd_multi <- compDistr(
-    object    = pe_multi,
+    object = pe_multi,
     covariate = "Field",
-    nuisance = ~ (1|Set),
-    adjust    = "stagewise"
+    nuisance = ~ (1 | Set),
+    adjust = "stagewise"
 )
 ```
 
@@ -263,24 +272,25 @@ pe_dd_multi <- compDistr(
 
 `adjust = "stagewise"` (used above) applies a two-stage procedure via
 `r Biocpkg("stageR")`: in the first stage, the omnibus p-value is adjusted
-across features with Benjamini–Hochberg FDR control. Only features that pass 
-this screening stage proceed to the second stage, where the pairwise comparisons 
-are adjusted for multiple testing across the comparisons via the Holm method,
+across features with Benjamini–Hochberg FDR control. Only features that
+pass this screening stage proceed to the second stage, where the pairwise
+comparisons are adjusted for multiple testing across the comparisons via the
+Holm method,
 within each significant feature.
 
 `adjust = "contrastwise"` applies Benjamini–Hochberg FDR correction
 independently to the omnibus column and to each pairwise comparison column.
 
-`adjust = "none"` skips correction entirely. For a three-group comparison
-this returns seven raw p-value columns per feature: one omnibus column each
-for `_GAM`, `_msqrob2`, and `_aggregated`, and one `_aggregated` column
-per pairwise comparison.
+`adjust = "none"` skips correction entirely. It returns three raw p-value
+columns, `_GAM`, `_msqrob2` and `_aggregated`, for the omnibus test and for
+every pairwise comparison. For the four levels of `Field` (six pairwise
+comparisons) this gives 3 x 7 = 21 columns per feature.
 
 ```{r compDistr_multi_contrastwise, eval=FALSE}
 pe_dd_multi_cw <- compDistr(
     object    = pe_multi,
     covariate = "Field",
-    nuisance  = ~ (1|Set),
+    nuisance  = ~ (1 | Set),
     adjust    = "contrastwise"
 )
 
@@ -321,7 +331,10 @@ topFeatures(pe_dd_multi_none, sort.by = "omnibus_aggregated")
 
 `visFit` returns one plot per pairwise comparison as a named list:
 
-```{r vis_multi, fig.cap="Pairwise GAM density comparisons for the most significant feature in the multi-group analysis.", fig.height=5}
+```{r vis_multi, fig.height=5}
+#| fig.cap: >
+#|   Pairwise GAM density comparisons for the most significant feature in
+#|   the multi-group analysis.
 top_multi <- rownames(topFeatures(pe_dd_multi, n = 10))
 visFit(pe_dd_multi, feature = top_multi[1], plot = "hist")
 ```
@@ -329,16 +342,19 @@ visFit(pe_dd_multi, feature = top_multi[1], plot = "hist")
 # Tips and best practices
 
 * **Minimum observations** The default `minObs = 50` requires at least 50
-  non-missing values per group before fitting a GAM. In experiments with few
-  cells per condition, lowering this threshold may increase the number of
-  tested features at the cost of less stable GAM fits.
+    non-missing values per group before fitting a GAM. In experiments with
+    few cells per condition, lowering this threshold may increase the number
+    of tested features at the cost of less stable GAM fits. Features below
+    the threshold get an `NA` p-value: they are not tested at all, also not
+    with the msqrob2 mean test alone.
 * **Number of bins** The default `bins = 25` works well for most datasets.
-  Increase `bins` if you suspect fine-grained distributional differences;
-  decrease it if many features have marginal counts per bin.
+    Increase `bins` if you suspect fine-grained distributional differences;
+    decrease it if many features have marginal counts per bin.
 * **Nuisance variables** Always account for technical variation (MS runs,
-  batches) via the `nuisance` argument.
+    batches) via the `nuisance` argument.
 * **Visualization** Use `visFit(..., plot = "diff")` to understand *where*
-  in the distribution the groups differ, which aids biological interpretation.
+    in the distribution the groups differ, which aids biological
+    interpretation.
 
 # Session information {.unnumbered}
 

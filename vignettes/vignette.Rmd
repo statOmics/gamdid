@@ -166,8 +166,13 @@ correction to the single pairwise comparison column.
 Setting `adjust = "none"` skips multiple testing correction entirely and
 returns raw p-values in three separate columns: `_GAM` (GAM test),
 `_msqrob2` (msqrob2 test), and `_aggregated` (harmonic mean of the two).
-This is useful for exploratory analysis or when you intend to apply your own
+This is useful when you intend to apply your own
 correction.
+
+Note that some features have an msqrob2 p-value but an `NA` GAM p-value.
+This happens when a feature has fewer than `minObs` non-missing observations
+in at least one group (default `minObs = 50`, adjustable in `compDistr`): no
+GAM is fitted for that feature, and its `_aggregated` p-value is `NA` as well.
 
 ```{r compDistr_none}
 pe_dd_none <- compDistr(

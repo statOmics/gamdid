@@ -37,7 +37,7 @@ test_that("level names containing the covariate name are handled", {
     out <- compDistr(sce, covariate = "Cell")
     expect_true("CellCellA_VS_CellCellB" %in% colnames(rowData(out)))
     p <- visFit(out, feature = "E9PAV3")
-    groups <- unique(as.character(p[[1]]$layers[[1]]$data$Cell))
+    groups <- unique(as.character(p$layers[[1]]$data$Cell))
     expect_setequal(groups, c("CellA", "CellB"))
 })
 

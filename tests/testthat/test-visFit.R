@@ -61,9 +61,9 @@ test_that("without significant features the most stringent BH level is used", {
         feature = "E9PAV3", plot = "diff",
         alpha = 1e-4 / metadata(out)$n_tests
     )
-    hw <- bandHalfWidth(p_default[[1]])
+    hw <- bandHalfWidth(p_default)
     expect_false(anyNA(hw))
-    expect_equal(hw, bandHalfWidth(p_explicit[[1]]))
+    expect_equal(hw, bandHalfWidth(p_explicit))
 })
 
 test_that("error when the BH level cannot be derived", {

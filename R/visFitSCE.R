@@ -62,6 +62,11 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE,
         }
     }
 
+    ## A single comparison (two groups) returns the plot itself
+    if (length(plot_list) == 1) {
+        plot_list <- plot_list[[1]]
+    }
+
     suppressWarnings(print(plot_list))
     invisible(plot_list)
 }

@@ -37,6 +37,7 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE,
 
     ## Two-sided significance level, the same for every comparison
     alpha_half <- visFitAlpha(sce, alpha) / 2
+    plot_fun <- if (plot == "hist") histPlot else diffPlot
 
     for (comp in comps) {
         ## Strip the covariate name from the start of both level names
@@ -51,24 +52,16 @@ visFitSCE <- function(sce, feature, plot = "hist", shade = TRUE,
         colnames(newdat)[colnames(newdat) == "covariate"] <- covar
         colnames(hist_dat)[colnames(hist_dat) == "covariate"] <- covar
 
-        if (plot == "hist") {
-            plot_list[[comp]] <- histPlot(
-                hist_dat, newdat, band, covar, comp, shade
-            )
-        } else {
-            plot_list[[comp]] <- diffPlot(
-                hist_dat, newdat, band, covar, comp, shade
-            )
-        }
+        plot_list[[comp]] <- plot_fun(
+            hist_dat, newdat, band, covar, comp, shade
+        )
     }
 
     ## A single comparison (two groups) returns the plot itself
     if (length(plot_list) == 1) {
         plot_list <- plot_list[[1]]
     }
-
-    suppressWarnings(print(plot_list))
-    invisible(plot_list)
+    plot_list
 }
 
 ## Histogram counts and Poisson GAM of one feature, on the partial residuals

@@ -43,7 +43,7 @@ keywords:
   - generalized additive models
 preferred-citation:
   type: article
-  title: "gamdid: Inference and visualization for differential distribution analysis in single-cell proteomics"
+  title: "gamdid: generalized additive models for differential distributions in single cell experiments"
   authors:
     - given-names: Lucas
       family-names: Beerland
@@ -57,4 +57,5 @@ preferred-citation:
       family-names: Clement
   journal: bioRxiv
   year: 2026
-  url: "https://github.com/statOmics/gamdid"
+  doi: "10.64898/2026.06.18.733106"
+  url: "https://www.biorxiv.org/content/10.64898/2026.06.18.733106v1"

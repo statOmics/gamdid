@@ -2,7 +2,7 @@ citHeader("To cite gamdid in publications use:")
 
 bibentry(
     bibtype  = "Article",
-    title    = "gamdid: Inference and visualization for differential distribution analysis in single-cell proteomics",
+    title    = "gamdid: generalized additive models for differential distributions in single cell experiments",
     author   = c(
         person("Lucas",      "Beerland"),
         person("Stijn",      "Vandenbulcke"),
@@ -12,10 +12,12 @@ bibentry(
     ),
     journal  = "bioRxiv",
     year     = "2026",
-    url      = "https://github.com/statOmics/gamdid",
+    doi      = "10.64898/2026.06.18.733106",
+    url      = "https://www.biorxiv.org/content/10.64898/2026.06.18.733106v1",
     textVersion = paste(
         "Beerland L, Vandenbulcke S, Vanderaa C, Martens L, Clement L (2026).",
-        "gamdid: Inference and visualization for differential distribution analysis",
-        "in single-cell proteomics. bioRxiv."
+        "gamdid: generalized additive models for differential distributions",
+        "in single cell experiments. bioRxiv.",
+        "doi:10.64898/2026.06.18.733106"
     )
 )

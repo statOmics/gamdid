@@ -104,7 +104,8 @@ top <- topFeatures(pe_dd, n = 10)
 top
 
 ## Visualize the most significant feature, with the difference smoother
-## (visFit returns a list with one plot per comparison)
+## (visFit returns one plot for two groups, or a named list with one plot
+## per comparison for more groups)
 visFit(pe_dd, feature = rownames(top)[1], plot = "diff")
 ```
 
@@ -144,8 +145,9 @@ browseVignettes("gamdid")
 If you use `gamdid` in your research, please cite:
 
 > Beerland L, Vandenbulcke S, Vanderaa C, Martens L, Clement L (2026).
-> gamdid: Inference and visualization for differential distribution analysis
-> in single-cell proteomics. *bioRxiv*.
+> gamdid: generalized additive models for differential distributions in single
+> cell experiments. *bioRxiv*.
+> [doi:10.64898/2026.06.18.733106](https://doi.org/10.64898/2026.06.18.733106)
 
 The citation is also available from R with `citation("gamdid")`, and in the
 [`CITATION.cff`](CITATION.cff) file of this repository.

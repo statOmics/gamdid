@@ -38,7 +38,7 @@ Imports:
     MultiAssayExperiment,
     QFeatures,
     S4Vectors,
-    msqrob2 (>= 1.21.1),
+    msqrob2 (>= 1.21.2),
     harmonicmeanp,
     stageR,
     mgcv,
